@@ -277,17 +277,22 @@
   // Portal option click
   portal.addEventListener('click', async (e) => {
     const opt = e.target.closest('.status-option');
+    console.log('CLICK opt:', opt, 'activeTaskId:', activeTaskId);
     if (!opt || !activeTaskId) return;
     const newStatus = opt.dataset.status;
+    console.log('newStatus:', newStatus, 'taskId:', activeTaskId);
     closePortal();
     try {
       await updateDoc(doc(db, 'tarefas', activeTaskId), { status: newStatus, updatedAt: serverTimestamp() });
       showToast('Status atualizado!');
-    } catch(err) { showToast('Erro ao atualizar status.'); }
+    } catch(err) {
+      console.error('ERRO FIRESTORE:', err);
+      showToast('Erro ao atualizar status.');
+    }
   });
 
-  // Close on outside click
-  document.addEventListener('click', (e) => {
+  // Close on outside click — use mousedown so it fires before the option's click
+  document.addEventListener('mousedown', (e) => {
     if (!portal.contains(e.target) && !e.target.closest('.status-btn')) closePortal();
   });
 
