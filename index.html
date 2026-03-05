@@ -284,6 +284,13 @@
   onSnapshot(tasksRef, snap => {
     allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     allTasks.sort((a, b) => (a.status === 'Feito' ? 1 : 0) - (b.status === 'Feito' ? 1 : 0));
+    // Hide tasks marked as Feito for more than 7 days
+    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    allTasks = allTasks.filter(t => {
+      if (t.status !== 'Feito') return true;
+      const updated = t.updatedAt?.toMillis ? t.updatedAt.toMillis() : (t.updatedAt?.seconds ? t.updatedAt.seconds * 1000 : 0);
+      return updated === 0 || updated > oneWeekAgo;
+    });
     render();
     document.getElementById('syncDot').classList.add('online');
     document.getElementById('syncStatus').textContent = 'Sincronizado na cloud';
