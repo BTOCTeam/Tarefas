@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestor de Tarefas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface2: #22222d;
+    --border: #2e2e3e;
+    --accent: #7c5cfc;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --done-text: #444460;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1.5rem; }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 30%, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; max-width: 1100px; margin-inline: auto; }
+  .header-left p { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; }
+  .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; margin-right: 6px; transition: background 0.3s; }
+  .sync-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; max-width: 1100px; margin: 0 auto 1.5rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.4rem; flex: 1; min-width: 100px; }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.2rem; }
+  .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--accent2); }
+  .search-bar { max-width: 1100px; margin: 0 auto 1.5rem; display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.2rem; }
+  .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 0.95rem; }
+  .search-bar input::placeholder { color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.3rem; border-radius: 10px; border: none; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 600; transition: all 0.15s; line-height: 1; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #6b4de0; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,252,0.4); }
+  .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+  .table-wrap { max-width: 1100px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  thead th { padding: 0.9rem 1.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; text-align: left; }
+  tbody tr { border-top: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:hover { background: rgba(124,92,252,0.05); }
+  td { padding: 1rem 1.2rem; font-size: 0.9rem; vertical-align: middle; }
+  .client-name { font-weight: 600; color: var(--text); }
+  .task-text { color: #b0b0d0; }
+  .task-done .client-name, .task-done .task-text { color: var(--done-text); text-decoration: line-through; }
+  .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; }
+  .badge-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .badge-done { background: rgba(52,211,153,0.15); color: var(--green); }
+  .badge-custom { background: rgba(124,92,252,0.15); color: var(--accent2); }
+  .assignee-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.15rem 0.5rem; font-size: 0.8rem; color: var(--muted); }
+  .actions { display: flex; gap: 0.4rem; justify-content: center; }
+  .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.15s; }
+  .icon-btn.green:hover { background: rgba(52,211,153,0.1); color: var(--green); border-color: var(--green); }
+  .icon-btn.blue:hover { background: rgba(96,165,250,0.1); color: #60a5fa; border-color: #60a5fa; }
+  .icon-btn.red:hover { background: rgba(248,113,113,0.1); color: var(--red); border-color: var(--red); }
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+  .loading-row td { text-align: center; padding: 3rem; color: var(--muted); }
+  .spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(0.97); transition: transform 0.2s; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+  .overlay.open .modal { transform: translateY(0) scale(1); }
+  .modal-header { padding: 1.5rem 1.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+  .modal-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+  .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .field input, .field textarea, .field select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.15s; resize: vertical; }
+  .field select option { background: var(--bg); }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,252,0.15); }
+  .modal-footer { padding: 1rem 1.5rem 1.5rem; display: flex; gap: 0.75rem; border-top: 1px solid var(--border); }
+  .modal-footer .btn { flex: 1; justify-content: center; }
+  .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); color: var(--text); padding: 0.8rem 1.2rem; border-radius: 10px; font-size: 0.88rem; transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); z-index: 200; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .notes-tooltip { position: relative; display: inline-flex; }
+  .notes-tooltip .tip { visibility: hidden; opacity: 0; background: #1a1a2e; border: 1px solid var(--border); color: var(--text); font-size: 0.78rem; border-radius: 8px; padding: 0.5rem 0.75rem; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); max-width: 220px; white-space: normal; z-index: 50; transition: opacity 0.15s; pointer-events: none; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+  .notes-tooltip:hover .tip { visibility: visible; opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Tarefas</h1>
+    <p><span class="sync-dot" id="syncDot"></span><span id="syncStatus">A ligar à cloud...</span></p>
+  </div>
+  <button class="btn btn-primary" id="btnNovaTarefa">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Nova Tarefa
+  </button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-label">Total</div><div class="stat-value" id="stat-total">—</div></div>
+  <div class="stat"><div class="stat-label">Pendentes</div><div class="stat-value" style="color:#fbbf24" id="stat-pending">—</div></div>
+  <div class="stat"><div class="stat-label">Concluídas</div><div class="stat-value" style="color:var(--green)" id="stat-done">—</div></div>
+</div>
+
+<div class="search-bar">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="text" id="searchInput" placeholder="Pesquisar por cliente, tarefa ou notas...">
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Tarefa</th>
+        <th>Responsável</th>
+        <th>Status</th>
+        <th style="text-align:center">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <tr class="loading-row"><td colspan="5"><span class="spinner"></span>A carregar tarefas...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Nova Tarefa</h2>
+      <button class="icon-btn" id="btnCloseModal" style="border:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Cliente *</label><input type="text" id="f-client" placeholder="Nome do cliente"></div>
+      <div class="field"><label>Tarefa *</label><textarea id="f-task" rows="2" placeholder="Descrição da tarefa"></textarea></div>
+      <div class="field"><label>Pessoa Alocada</label><input type="text" id="f-assignee" placeholder="Nome do responsável"></div>
+      <div class="field"><label>Status</label>
+        <select id="f-status">
+          <option value="">Pendente</option>
+          <option value="Em Progresso">Em Progresso</option>
+          <option value="Feito">Feito</option>
+          <option value="Bloqueado">Bloqueado</option>
+        </select>
+      </div>
+      <div class="field"><label>Notas Adicionais</label><textarea id="f-notes" rows="3" placeholder="Notas, observações..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnCancelar">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar na Cloud
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDgPRSqHtgVt4zDN7EHITC7gO6LucUsWpw",
+    authDomain: "gestor-tarefas-6279d.firebaseapp.com",
+    projectId: "gestor-tarefas-6279d",
+    storageBucket: "gestor-tarefas-6279d.firebasestorage.app",
+    messagingSenderId: "53481253000",
+    appId: "1:53481253000:web:eb72a77788ad508f31573d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const tasksRef = collection(db, 'tarefas');
+
+  let allTasks = [];
+  let editId = null;
+
+  // Realtime listener
+  onSnapshot(tasksRef, (snapshot) => {
+    allTasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // sort: pending first, then by creation
+    allTasks.sort((a, b) => {
+      const aDone = a.status === 'Feito' ? 1 : 0;
+      const bDone = b.status === 'Feito' ? 1 : 0;
+      if (aDone !== bDone) return aDone - bDone;
+      return (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0);
+    });
+    render();
+    document.getElementById('syncDot').classList.add('online');
+    document.getElementById('syncStatus').textContent = 'Sincronizado na cloud';
+  }, (err) => {
+    console.error(err);
+    document.getElementById('syncStatus').textContent = 'Erro de ligação';
+    showToast('Erro a ligar ao Firebase. Verifica as regras do Firestore.');
+  });
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function render() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allTasks.filter(t =>
+      (t.client||'').toLowerCase().includes(q) ||
+      (t.task||'').toLowerCase().includes(q) ||
+      (t.notes||'').toLowerCase().includes(q)
+    );
+    const done = allTasks.filter(t => t.status === 'Feito').length;
+    document.getElementById('stat-total').textContent = allTasks.length;
+    document.getElementById('stat-pending').textContent = allTasks.length - done;
+    document.getElementById('stat-done').textContent = done;
+
+    const tbody = document.getElementById('tableBody');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>' + (allTasks.length ? 'Nenhum resultado encontrado.' : 'Ainda não há tarefas. Clica em "Nova Tarefa" para começar!') + '</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(t => {
+      const isDone = t.status === 'Feito';
+      let bc = 'badge-pending', bl = t.status || 'Pendente';
+      if (isDone) bc = 'badge-done';
+      else if (t.status && t.status !== 'Pendente') bc = 'badge-custom';
+      const noteIcon = t.notes ? '<div class="notes-tooltip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent2);cursor:help"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="tip">' + esc(t.notes) + '</span></div>' : '';
+      return '<tr class="' + (isDone ? 'task-done' : '') + '">' +
+        '<td><span class="client-name">' + esc(t.client) + '</span></td>' +
+        '<td><div style="display:flex;align-items:center;gap:.5rem"><span class="task-text">' + esc(t.task) + '</span>' + noteIcon + '</div></td>' +
+        '<td><span class="assignee-chip">' + esc(t.assignee || '—') + '</span></td>' +
+        '<td><span class="badge ' + bc + '">' + esc(bl) + '</span></td>' +
+        '<td><div class="actions">' +
+          (!isDone ? '<button class="icon-btn green" data-action="done" data-id="' + t.id + '" title="Marcar como feito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>' : '') +
+          '<button class="icon-btn blue" data-action="edit" data-id="' + t.id + '" title="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+          '<button class="icon-btn red" data-action="del" data-id="' + t.id + '" title="Eliminar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
+        '</div></td></tr>';
+    }).join('');
+  }
+
+  function openModal(id) {
+    editId = id || null;
+    document.getElementById('modalTitle').textContent = id ? 'Editar Tarefa' : 'Nova Tarefa';
+    if (id) {
+      const t = allTasks.find(x => x.id === id);
+      document.getElementById('f-client').value = t.client || '';
+      document.getElementById('f-task').value = t.task || '';
+      document.getElementById('f-assignee').value = t.assignee || '';
+      document.getElementById('f-status').value = t.status || '';
+      document.getElementById('f-notes').value = t.notes || '';
+    } else {
+      ['f-client','f-task','f-assignee','f-notes'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-status').value = '';
+    }
+    document.getElementById('overlay').classList.add('open');
+    setTimeout(() => document.getElementById('f-client').focus(), 200);
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    editId = null;
+  }
+
+  async function saveTask() {
+    const client = document.getElementById('f-client').value.trim();
+    const task = document.getElementById('f-task').value.trim();
+    if (!client || !task) { showToast('Preenche o cliente e a tarefa!'); return; }
+    const btn = document.getElementById('btnGuardar');
+    btn.disabled = true;
+    btn.textContent = 'A guardar...';
+    const data = {
+      client,
+      task,
+      assignee: document.getElementById('f-assignee').value.trim(),
+      status: document.getElementById('f-status').value,
+      notes: document.getElementById('f-notes').value.trim(),
+      updatedAt: serverTimestamp()
+    };
+    try {
+      if (editId) {
+        await updateDoc(doc(db, 'tarefas', editId), data);
+        showToast('Tarefa atualizada!');
+      } else {
+        await addDoc(tasksRef, { ...data, createdAt: serverTimestamp() });
+        showToast('Tarefa guardada na cloud! ☁️');
+      }
+      closeModal();
+    } catch (e) {
+      console.error(e);
+      showToast('Erro ao guardar. Verifica as regras do Firestore.');
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardar na Cloud';
+  }
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // Event wiring
+  document.getElementById('btnNovaTarefa').addEventListener('click', () => openModal());
+  document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelar').addEventListener('click', closeModal);
+  document.getElementById('btnGuardar').addEventListener('click', saveTask);
+  document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target === document.getElementById('overlay')) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  document.getElementById('tableBody').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if (action === 'done') {
+      await updateDoc(doc(db, 'tarefas', id), { status: 'Feito', updatedAt: serverTimestamp() });
+      showToast('Tarefa concluída! ✓');
+    } else if (action === 'edit') {
+      openModal(id);
+    } else if (action === 'del') {
+      if (confirm('Eliminar esta tarefa permanentemente?')) {
+        await deleteDoc(doc(db, 'tarefas', id));
+        showToast('Tarefa removida.');
+      }
+    }
+  });
+</script>
+</body>
+</html>
