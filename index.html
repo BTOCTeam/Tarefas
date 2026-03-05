@@ -3,139 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BTOC TEAM - Tarefas 📝</title>
+<title>BTOC TEAM - Tarefas</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f4f5f7;
-    --surface: #ffffff;
-    --surface2: #f0f1f5;
-    --border: #e2e4ea;
-    --accent: #6d4aff;
-    --accent2: #8b6fff;
-    --green: #10b981;
-    --red: #ef4444;
-    --orange: #f97316;
-    --text: #1a1a2e;
-    --muted: #8a8aaa;
-    --done-text: #b0b0c8;
+    --bg: #f4f5f7; --surface: #ffffff; --surface2: #f0f1f5; --border: #e2e4ea;
+    --accent: #6d4aff; --accent2: #8b6fff; --green: #10b981; --red: #ef4444;
+    --orange: #f97316; --text: #1a1a2e; --muted: #8a8aaa; --done-text: #b0b0c8;
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1.5rem; }
   h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #3b1fa8 0%, var(--accent2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; max-width: 1200px; margin-inline: auto; }
   .header-left p { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; display: flex; align-items: center; gap: 0.4rem; }
-  .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; transition: background 0.3s; flex-shrink: 0; }
+  .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; }
   .sync-dot.online { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.4); }
-
   .stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; max-width: 1200px; margin: 0 auto 1.5rem; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.4rem; flex: 1; min-width: 110px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.25rem; font-weight: 600; }
   .stat-value { font-size: 1.7rem; font-weight: 700; color: var(--accent); }
-
   .toolbar { max-width: 1200px; margin: 0 auto 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
   .search-bar { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 0.9rem; }
   .search-bar input::placeholder { color: var(--muted); }
   .filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1rem; color: var(--text); font-family: inherit; font-size: 0.85rem; font-weight: 500; outline: none; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .filter-select:focus { border-color: var(--accent); }
   .filter-select.active { border-color: var(--accent); color: var(--accent); background: #f5f3ff; }
-
   .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.3rem; border-radius: 10px; border: none; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 600; transition: all 0.15s; line-height: 1; }
   .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(109,74,255,0.3); }
-  .btn-primary:hover { background: #5a39e0; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(109,74,255,0.4); }
+  .btn-primary:hover { background: #5a39e0; transform: translateY(-1px); }
   .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
-
+  .btn-ghost:hover { color: var(--text); }
   .table-wrap { max-width: 1200px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: visible; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
   table { width: 100%; border-collapse: collapse; }
-  thead { background: var(--surface2); }
-  thead th { padding: 0.9rem 1.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; text-align: left; border-bottom: 1px solid var(--border); }
+  thead th { padding: 0.9rem 1.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; text-align: left; border-bottom: 1px solid var(--border); background: var(--surface2); }
+  thead th:first-child { border-radius: 16px 0 0 0; }
+  thead th:last-child { border-radius: 0 16px 0 0; }
   tbody tr { border-top: 1px solid var(--border); transition: background 0.1s; }
   tbody tr:hover { background: #f8f7ff; }
   td { padding: 0.9rem 1.2rem; font-size: 0.9rem; vertical-align: middle; }
-
-  .client-name { font-weight: 600; color: var(--text); }
+  .client-name { font-weight: 600; }
   .task-text { color: #555570; }
   .task-done .client-name, .task-done .task-text { color: var(--done-text); text-decoration: line-through; }
-
-  .status-btn {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.22rem 0.6rem 0.22rem 0.75rem;
-    border-radius: 999px; font-size: 0.72rem; font-weight: 700;
-    letter-spacing: 0.03em; cursor: pointer; border: none;
-    font-family: inherit; transition: filter 0.15s; user-select: none;
-  }
-  .status-btn:hover { filter: brightness(0.92); }
-  .status-btn svg { opacity: 0.6; flex-shrink: 0; }
-  .status-btn.pending  { background: #fff8e1; color: #b45309; border: 1px solid #fde68a; }
-  .status-btn.done     { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-  .status-btn.progress { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
-
-  #status-portal {
-    position: fixed; z-index: 9999; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.14); min-width: 160px;
-    overflow: hidden; display: none;
-  }
-  #status-portal.open { display: block; }
-  .status-option {
-    display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 1rem;
-    cursor: pointer; font-size: 0.84rem; font-weight: 600; transition: background 0.1s;
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-  }
-  .status-option:hover { background: var(--surface2); }
-  .status-option.active { background: #f3f0ff; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .dot-pending  { background: #f59e0b; }
-  .dot-progress { background: #8b5cf6; }
-  .dot-done     { background: var(--green); }
-
-  .assignee-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
-  .assignee-dropdown { position: relative; }
-  .assignee-trigger { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; text-align: left; transition: border-color 0.15s; }
-  .assignee-trigger:focus, .assignee-trigger.open { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(109,74,255,0.12); background: #fff; }
-  .assignee-trigger .trigger-text { flex: 1; color: var(--muted); }
-  .assignee-trigger .trigger-text.has-value { color: var(--text); font-weight: 500; }
-  .assignee-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 200; overflow: hidden; display: none; }
-  .assignee-menu.open { display: block; }
-  .assignee-checks { padding: 0.4rem; display: flex; flex-direction: column; gap: 0.2rem; }
-  .check-opt { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 0.88rem; font-weight: 500; }
-  .check-opt:hover { background: #f3f0ff; }
-  .check-opt input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
-  .check-opt:has(input:checked) { background: #f3f0ff; color: var(--accent); font-weight: 600; }
+  .assignee-chip { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.15rem 0.55rem; font-size: 0.78rem; color: var(--muted); font-weight: 500; margin: 0.1rem; }
   .deadline-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; padding: 0.22rem 0.65rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); white-space: nowrap; font-weight: 500; }
   .deadline-chip.overdue { background: #fff1f1; border-color: #fca5a5; color: var(--red); }
   .deadline-chip.soon { background: #fff7ed; border-color: #fdba74; color: var(--orange); }
   .deadline-chip.ok { background: #ecfdf5; border-color: #6ee7b7; color: var(--green); }
-
-  .actions { display: flex; gap: 0.4rem; align-items: center; }
-  .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.15s; }
+  .status-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.6rem 0.22rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; font-family: inherit; user-select: none; }
+  .status-btn:hover { filter: brightness(0.92); }
+  .status-btn.pending  { background: #fff8e1; color: #b45309; border: 1px solid #fde68a; }
+  .status-btn.done     { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .status-btn.progress { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .actions { display: flex; gap: 0.35rem; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.15s; }
   .icon-btn.blue:hover { background: #eff6ff; color: #3b82f6; border-color: #93c5fd; }
-  .icon-btn.red:hover { background: #fff1f1; color: var(--red); border-color: #fca5a5; }
-  .icon-btn.green:hover { background: #ecfdf5; color: var(--green); border-color: #6ee7b7; }
+  .icon-btn.red:hover  { background: #fff1f1; color: var(--red); border-color: #fca5a5; }
+  .icon-btn.green:hover  { background: #ecfdf5; color: var(--green); border-color: #6ee7b7; }
   .icon-btn.purple:hover { background: #f5f3ff; color: var(--accent); border-color: #c4b5fd; }
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
 
-  .overlay { position: fixed; inset: 0; background: rgba(30,20,60,0.35); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  /* STATUS PORTAL */
+  #status-portal { position: fixed; z-index: 9999; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.14); min-width: 160px; overflow: hidden; display: none; }
+  #status-portal.open { display: block; }
+  .status-option { display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 1rem; cursor: pointer; font-size: 0.84rem; font-weight: 600; color: var(--text); font-family: 'DM Sans', sans-serif; }
+  .status-option:hover { background: var(--surface2); }
+  .status-option.active { background: #f3f0ff; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dot-pending { background: #f59e0b; } .dot-progress { background: #8b5cf6; } .dot-done { background: var(--green); }
+
+  /* MODAL */
+  .overlay { position: fixed; inset: 0; background: rgba(30,20,60,0.35); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
   .overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 500px; box-shadow: 0 25px 60px rgba(0,0,0,0.18); max-height: 90vh; overflow-y: auto; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(0.97); transition: transform 0.2s; box-shadow: 0 25px 60px rgba(0,0,0,0.18); }
+  .overlay.open .modal { transform: translateY(0) scale(1); }
   .modal-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
   .modal-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
   .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-  .field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.4rem; letter-spacing: 0.06em; }
+  .field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
   .field input, .field textarea, .field select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.15s; resize: vertical; }
   .field input[type="date"] { color-scheme: light; }
   .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(109,74,255,0.12); background: #fff; }
+
+  /* ASSIGNEE DROPDOWN */
+  .assignee-dropdown { position: relative; }
+  .assignee-trigger { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; text-align: left; transition: border-color 0.15s; }
+  .assignee-trigger:hover, .assignee-trigger.open { border-color: var(--accent); background: #fff; }
+  .assignee-trigger .trigger-label { flex: 1; color: var(--muted); }
+  .assignee-trigger .trigger-label.filled { color: var(--text); font-weight: 500; }
+  .assignee-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 10; overflow: hidden; display: none; }
+  .assignee-menu.open { display: block; }
+  .assignee-option { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.9rem; cursor: pointer; font-size: 0.88rem; font-weight: 500; transition: background 0.1s; }
+  .assignee-option:hover { background: var(--surface2); }
+  .assignee-option input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+  .assignee-option.checked { background: #f3f0ff; color: var(--accent); font-weight: 600; }
+
   .modal-footer { padding: 1rem 1.5rem; display: flex; gap: 0.75rem; border-top: 1px solid var(--border); }
   .modal-footer .btn { flex: 1; justify-content: center; }
 
-  .toast { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--text); color: #fff; padding: 0.8rem 1.4rem; border-radius: 10px; font-size: 0.88rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); z-index: 9998; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-left: 3px solid var(--accent2); }
+  /* TOAST */
+  .toast { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--text); color: #fff; padding: 0.8rem 1.4rem; border-radius: 10px; font-size: 0.88rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); z-index: 9998; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-left: 3px solid var(--accent2); white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
   .notes-tooltip { position: relative; display: inline-flex; }
-  .notes-tooltip .tip { visibility: hidden; opacity: 0; background: var(--text); color: #fff; font-size: 0.78rem; border-radius: 8px; padding: 0.5rem; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); width: 200px; z-index: 50; transition: opacity 0.15s; pointer-events: none; }
+  .notes-tooltip .tip { visibility: hidden; opacity: 0; background: var(--text); color: #fff; font-size: 0.78rem; border-radius: 8px; padding: 0.5rem 0.75rem; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 200px; z-index: 50; transition: opacity 0.15s; pointer-events: none; }
   .notes-tooltip:hover .tip { visibility: visible; opacity: 1; }
-
-  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); font-size: 0.95rem; }
 
   @media (max-width: 700px) { thead th:nth-child(3), td:nth-child(3) { display: none; } }
 </style>
@@ -173,7 +144,7 @@
     <option value="Vânia Costa">Vânia Costa</option>
   </select>
   <select class="filter-select" id="filterStatus">
-    <option value="">📋 Todos os status</option>
+    <option value="all">📋 Todos os status</option>
     <option value="">Pendente</option>
     <option value="Em Progresso">Em Progresso</option>
     <option value="Feito">Feito</option>
@@ -184,12 +155,7 @@
   <table>
     <thead>
       <tr>
-        <th>Cliente</th>
-        <th>Tarefa</th>
-        <th>Responsável</th>
-        <th>Data Conclusão</th>
-        <th>Status</th>
-        <th style="text-align:center">Ações</th>
+        <th>Cliente</th><th>Tarefa</th><th>Responsável</th><th>Data Conclusão</th><th>Status</th><th style="text-align:center">Ações</th>
       </tr>
     </thead>
     <tbody id="tableBody">
@@ -198,41 +164,41 @@
   </table>
 </div>
 
+<!-- Status portal -->
 <div id="status-portal">
   <div class="status-option" data-status=""><span class="dot dot-pending"></span>Pendente</div>
   <div class="status-option" data-status="Em Progresso"><span class="dot dot-progress"></span>Em Progresso</div>
   <div class="status-option" data-status="Feito"><span class="dot dot-done"></span>Feito</div>
 </div>
 
+<!-- Modal -->
 <div class="overlay" id="overlay">
-  <div class="modal">
+  <div class="modal" id="modal">
     <div class="modal-header">
       <h2 id="modalTitle">Nova Tarefa</h2>
-      <button class="icon-btn" id="btnCloseModal" style="border:none">
+      <button class="icon-btn" id="btnCloseModal" style="border:none;background:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Cliente *</label><input type="text" id="f-client" placeholder="Nome do cliente"></div>
+      <div class="field"><label>Tarefa *</label><textarea id="f-task" rows="2" placeholder="Descrição da tarefa"></textarea></div>
+      <div class="field">
         <label>Responsável pela Tarefa</label>
-        <div class="assignee-dropdown">
+        <div class="assignee-dropdown" id="assigneeDropdown">
           <button type="button" class="assignee-trigger" id="assigneeTrigger">
-            <span class="trigger-text" id="assigneeTriggerText">— Sem responsável —</span>
+            <span class="trigger-label" id="assigneeLabel">— Sem responsável —</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="assignee-menu" id="assigneeMenu">
-            <div class="assignee-checks">
-              <label class="check-opt"><input type="checkbox" name="assignee" value="Tiago Fachada"><span>Tiago Fachada</span></label>
-              <label class="check-opt"><input type="checkbox" name="assignee" value="Tiago Pereira"><span>Tiago Pereira</span></label>
-              <label class="check-opt"><input type="checkbox" name="assignee" value="Miguel Leitão"><span>Miguel Leitão</span></label>
-              <label class="check-opt"><input type="checkbox" name="assignee" value="Vânia Costa"><span>Vânia Costa</span></label>
-            </div>
+            <label class="assignee-option" id="opt-tf"><input type="checkbox" name="assignee" value="Tiago Fachada"> Tiago Fachada</label>
+            <label class="assignee-option" id="opt-tp"><input type="checkbox" name="assignee" value="Tiago Pereira"> Tiago Pereira</label>
+            <label class="assignee-option" id="opt-ml"><input type="checkbox" name="assignee" value="Miguel Leitão"> Miguel Leitão</label>
+            <label class="assignee-option" id="opt-vc"><input type="checkbox" name="assignee" value="Vânia Costa"> Vânia Costa</label>
           </div>
-        </div>
-        <div class="assignee-checks">
-          <label class="check-opt"><input type="checkbox" name="assignee" value="Tiago Fachada"><span>Tiago Fachada</span></label>
-          <label class="check-opt"><input type="checkbox" name="assignee" value="Tiago Pereira"><span>Tiago Pereira</span></label>
-          <label class="check-opt"><input type="checkbox" name="assignee" value="Miguel Leitão"><span>Miguel Leitão</span></label>
-          <label class="check-opt"><input type="checkbox" name="assignee" value="Vânia Costa"><span>Vânia Costa</span></label>
         </div>
       </div>
       <div class="field"><label>Data de Conclusão</label><input type="date" id="f-deadline"></div>
-      <input type="hidden" id="f-status" value="">
       <div class="field"><label>Notas Adicionais</label><textarea id="f-notes" rows="3" placeholder="Notas, observações..."></textarea></div>
     </div>
     <div class="modal-footer">
@@ -249,76 +215,42 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  const firebaseConfig = {
+  const app = initializeApp({
     apiKey: "AIzaSyDgPRSqHtgVt4zDN7EHITC7gO6LucUsWpw",
     authDomain: "gestor-tarefas-6279d.firebaseapp.com",
     projectId: "gestor-tarefas-6279d",
     storageBucket: "gestor-tarefas-6279d.firebasestorage.app",
     messagingSenderId: "53481253000",
     appId: "1:53481253000:web:eb72a77788ad508f31573d"
-  };
-
-  const app = initializeApp(firebaseConfig);
+  });
   const db = getFirestore(app);
   const tasksRef = collection(db, 'tarefas');
+
   let allTasks = [];
   let editId = null;
-  let activeTaskId = null;
+  let activeStatusId = null;
 
   const STATUS_META = {
     '':             { label: 'Pendente',     cls: 'pending'  },
     'Em Progresso': { label: 'Em Progresso', cls: 'progress' },
     'Feito':        { label: 'Feito',        cls: 'done'     },
   };
-
   const chevron = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
 
-  const portal = document.getElementById('status-portal');
+  // ── Firebase listener ──────────────────────────────────────────
+  onSnapshot(tasksRef, snap => {
+    allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allTasks.sort((a, b) => (a.status === 'Feito' ? 1 : 0) - (b.status === 'Feito' ? 1 : 0));
+    render();
+    document.getElementById('syncDot').classList.add('online');
+    document.getElementById('syncStatus').textContent = 'Sincronizado na cloud';
+  }, () => showToast('Erro de ligação ao Firebase.'));
 
-  function openPortal(taskId, anchorEl) {
-    activeTaskId = taskId;
-    const currentStatus = allTasks.find(t => t.id === taskId)?.status || '';
-    portal.querySelectorAll('.status-option').forEach(el => {
-      el.classList.toggle('active', el.dataset.status === currentStatus);
-    });
-    const rect = anchorEl.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    portal.style.left = rect.left + 'px';
-    portal.style.minWidth = Math.max(rect.width, 160) + 'px';
-    if (spaceBelow >= 130) {
-      portal.style.top = (rect.bottom + 6) + 'px';
-      portal.style.bottom = 'auto';
-    } else {
-      portal.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
-      portal.style.top = 'auto';
-    }
-    portal.classList.add('open');
-  }
-
-  function closePortal() { portal.classList.remove('open'); activeTaskId = null; }
-
-  portal.addEventListener('click', async (e) => {
-    const opt = e.target.closest('.status-option');
-    if (!opt) return;
-    const id = activeTaskId;
-    const newStatus = opt.dataset.status;
-    closePortal();
-    if (!id) return;
-    await updateStatus(id, newStatus);
-  });
-
-  document.addEventListener('mousedown', (e) => {
-    if (!portal.contains(e.target) && !e.target.closest('.status-btn')) closePortal();
-  });
-
-  async function updateStatus(id, status) {
-    try {
-      await updateDoc(doc(db, 'tarefas', id), { status, updatedAt: serverTimestamp() });
-      showToast(status === 'Feito' ? 'Tarefa concluída! ✅' : 'Status atualizado!');
-    } catch(err) { showToast('Erro ao atualizar.'); }
-  }
+  // ── Render ─────────────────────────────────────────────────────
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   function deadlineInfo(dateStr, isDone) {
     if (!dateStr) return null;
@@ -332,86 +264,102 @@
     return { label: fmt, cls: 'ok' };
   }
 
-  onSnapshot(tasksRef, (snapshot) => {
-    allTasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    allTasks.sort((a, b) => (a.status === 'Feito' ? 1 : 0) - (b.status === 'Feito' ? 1 : 0));
-    render();
-    document.getElementById('syncDot').classList.add('online');
-    document.getElementById('syncStatus').textContent = 'Sincronizado na cloud';
-  });
-
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
   function render() {
     const q = document.getElementById('searchInput').value.toLowerCase();
-    const fAssignee = document.getElementById('filterAssignee').value;
-    const fStatus = document.getElementById('filterStatus').value;
-    const isStatusFiltered = document.getElementById('filterStatus').selectedIndex > 0;
+    const fA = document.getElementById('filterAssignee').value;
+    const fS = document.getElementById('filterStatus').value;
+    const fSActive = fS !== 'all';
 
     const filtered = allTasks.filter(t => {
       const matchQ = (t.client||'').toLowerCase().includes(q) || (t.task||'').toLowerCase().includes(q) || (t.notes||'').toLowerCase().includes(q);
       const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
-      const matchA = !fAssignee || assignees.includes(fAssignee);
-      const matchS = !isStatusFiltered || (t.status || '') === fStatus;
+      const matchA = !fA || assignees.includes(fA);
+      const matchS = !fSActive || (t.status || '') === fS;
       return matchQ && matchA && matchS;
     });
 
     const today = new Date(); today.setHours(0,0,0,0);
     const done = allTasks.filter(t => t.status === 'Feito').length;
-    const overdue = allTasks.filter(t => t.status !== 'Feito' && t.deadline && new Date(t.deadline + 'T00:00:00') < today).length;
+    const overdue = allTasks.filter(t => t.status !== 'Feito' && t.deadline && new Date(t.deadline+'T00:00:00') < today).length;
     document.getElementById('stat-total').textContent = allTasks.length;
     document.getElementById('stat-pending').textContent = allTasks.length - done;
     document.getElementById('stat-done').textContent = done;
     document.getElementById('stat-overdue').textContent = overdue;
-
-    // Update filter select styling
-    document.getElementById('filterAssignee').classList.toggle('active', !!fAssignee);
-    document.getElementById('filterStatus').classList.toggle('active', isStatusFiltered);
+    document.getElementById('filterAssignee').classList.toggle('active', !!fA);
+    document.getElementById('filterStatus').classList.toggle('active', fSActive);
 
     const tbody = document.getElementById('tableBody');
     if (!filtered.length) {
       tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">${allTasks.length ? 'Nenhum resultado com estes filtros.' : 'Ainda não há tarefas. Clica em "Nova Tarefa" para começar!'}</div></td></tr>`;
       return;
     }
-
     tbody.innerHTML = filtered.map(t => {
       const isDone = t.status === 'Feito';
       const meta = STATUS_META[t.status || ''] || STATUS_META[''];
       const dl = deadlineInfo(t.deadline, isDone);
-      const noteIcon = t.notes ? `<div class="notes-tooltip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);cursor:help;margin-left:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="tip">${esc(t.notes)}</span></div>` : '';
-
+      const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
+      const assigneeHTML = assignees.length ? assignees.map(a => `<span class="assignee-chip">${esc(a)}</span>`).join('') : '<span class="assignee-chip">—</span>';
+      const noteIcon = t.notes ? `<div class="notes-tooltip" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);cursor:help"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="tip">${esc(t.notes)}</span></div>` : '';
       return `<tr class="${isDone ? 'task-done' : ''}">
         <td><span class="client-name">${esc(t.client)}</span></td>
         <td><div style="display:flex;align-items:center"><span class="task-text">${esc(t.task)}</span>${noteIcon}</div></td>
-        <td><span class="assignee-chip">${Array.isArray(t.assignee) ? t.assignee.map(a => `<span class='assignee-chip'>${esc(a)}</span>`).join(' ') : `<span class='assignee-chip'>${esc(t.assignee || '—')}</span>`}</span></td>
-        <td>${dl ? `<span class="deadline-chip ${dl.cls}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
+        <td>${assigneeHTML}</td>
+        <td>${dl ? `<span class="deadline-chip ${dl.cls}">${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td><button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button></td>
         <td><div class="actions">
-          <button class="icon-btn purple" data-action="set-progress" data-id="${t.id}" title="Em Progresso">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="icon-btn green" data-action="set-done" data-id="${t.id}" title="Marcar como Feito">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-          </button>
-          <button class="icon-btn blue" data-action="edit" data-id="${t.id}" title="Editar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          </button>
+          <button class="icon-btn purple" data-action="set-progress" data-id="${t.id}" title="Em Progresso"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="icon-btn green" data-action="set-done" data-id="${t.id}" title="Feito"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+          <button class="icon-btn blue" data-action="edit" data-id="${t.id}" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
         </div></td>
       </tr>`;
     }).join('');
   }
 
-  document.getElementById('tableBody').addEventListener('click', async (e) => {
+  // ── Status portal ──────────────────────────────────────────────
+  const portal = document.getElementById('status-portal');
+
+  function openPortal(taskId, anchor) {
+    activeStatusId = taskId;
+    const cur = allTasks.find(t => t.id === taskId)?.status || '';
+    portal.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === cur));
+    const r = anchor.getBoundingClientRect();
+    portal.style.left = r.left + 'px';
+    portal.style.minWidth = Math.max(r.width, 160) + 'px';
+    const below = window.innerHeight - r.bottom;
+    if (below >= 130) { portal.style.top = (r.bottom + 6) + 'px'; portal.style.bottom = 'auto'; }
+    else { portal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; portal.style.top = 'auto'; }
+    portal.classList.add('open');
+  }
+
+  function closePortal() { portal.classList.remove('open'); activeStatusId = null; }
+
+  portal.addEventListener('click', async e => {
+    const opt = e.target.closest('.status-option');
+    if (!opt) return;
+    const id = activeStatusId;
+    const status = opt.dataset.status;
+    closePortal();
+    if (!id) return;
+    await updateStatus(id, status);
+  });
+
+  async function updateStatus(id, status) {
+    try {
+      await updateDoc(doc(db, 'tarefas', id), { status, updatedAt: serverTimestamp() });
+      showToast(status === 'Feito' ? 'Tarefa concluída! ✅' : 'Status atualizado!');
+    } catch { showToast('Erro ao atualizar status.'); }
+  }
+
+  // ── Table actions ──────────────────────────────────────────────
+  document.getElementById('tableBody').addEventListener('click', async e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     const { action, id } = btn.dataset;
     if (action === 'togglestatus') { openPortal(id, btn); return; }
     if (action === 'set-progress') { await updateStatus(id, 'Em Progresso'); return; }
-    if (action === 'set-done') { await updateStatus(id, 'Feito'); return; }
-    if (action === 'edit') { openModal(id); return; }
+    if (action === 'set-done')     { await updateStatus(id, 'Feito'); return; }
+    if (action === 'edit')         { openModal(id); return; }
     if (action === 'del') {
       if (confirm('Eliminar esta tarefa permanentemente?')) {
         await deleteDoc(doc(db, 'tarefas', id));
@@ -420,94 +368,120 @@
     }
   });
 
+  // ── Assignee dropdown ──────────────────────────────────────────
+  const assigneeTrigger = document.getElementById('assigneeTrigger');
+  const assigneeMenu    = document.getElementById('assigneeMenu');
+  const assigneeLabel   = document.getElementById('assigneeLabel');
+
+  assigneeTrigger.addEventListener('click', e => {
+    e.stopPropagation();
+    assigneeMenu.classList.toggle('open');
+    assigneeTrigger.classList.toggle('open');
+  });
+
+  // Close assignee menu when clicking outside — but NOT when clicking inside modal
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#assigneeDropdown')) {
+      assigneeMenu.classList.remove('open');
+      assigneeTrigger.classList.remove('open');
+    }
+  });
+
+  function getSelectedAssignees() {
+    return Array.from(document.querySelectorAll('input[name="assignee"]:checked')).map(c => c.value);
+  }
+
+  function updateAssigneeLabel() {
+    const sel = getSelectedAssignees();
+    if (sel.length) { assigneeLabel.textContent = sel.join(', '); assigneeLabel.classList.add('filled'); }
+    else            { assigneeLabel.textContent = '— Sem responsável —'; assigneeLabel.classList.remove('filled'); }
+    // highlight checked options
+    document.querySelectorAll('.assignee-option').forEach(opt => {
+      opt.classList.toggle('checked', opt.querySelector('input').checked);
+    });
+  }
+
+  document.querySelectorAll('input[name="assignee"]').forEach(cb => cb.addEventListener('change', updateAssigneeLabel));
+
+  // ── Modal ──────────────────────────────────────────────────────
   function openModal(id) {
     editId = id || null;
     closePortal();
     document.getElementById('modalTitle').textContent = id ? 'Editar Tarefa' : 'Nova Tarefa';
+    document.getElementById('btnGuardar').innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ${id ? 'Guardar Alterações' : 'Adicionar Tarefa'}`;
+
+    // Reset checkboxes
+    document.querySelectorAll('input[name="assignee"]').forEach(cb => cb.checked = false);
+
     if (id) {
       const t = allTasks.find(x => x.id === id);
       document.getElementById('f-client').value = t.client || '';
-      document.getElementById('f-task').value = t.task || '';
-      const saved = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
-      document.querySelectorAll('input[name="assignee"]').forEach(cb => cb.checked = saved.includes(cb.value));
+      document.getElementById('f-task').value   = t.task || '';
       document.getElementById('f-deadline').value = t.deadline || '';
-      document.getElementById('f-status').value = t.status || '';
-      document.getElementById('f-notes').value = t.notes || '';
+      document.getElementById('f-notes').value  = t.notes || '';
+      const saved = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
+      document.querySelectorAll('input[name="assignee"]').forEach(cb => { if (saved.includes(cb.value)) cb.checked = true; });
     } else {
       ['f-client','f-task','f-deadline','f-notes'].forEach(i => document.getElementById(i).value = '');
-      document.querySelectorAll('input[name="assignee"]').forEach(cb => cb.checked = false);
-      document.getElementById('f-status').value = '';
     }
-    updateAssigneeTrigger();
+    updateAssigneeLabel();
     document.getElementById('overlay').classList.add('open');
     setTimeout(() => document.getElementById('f-client').focus(), 200);
   }
 
-  function closeModal() { document.getElementById('overlay').classList.remove('open'); editId = null; }
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    assigneeMenu.classList.remove('open');
+    assigneeTrigger.classList.remove('open');
+    editId = null;
+  }
 
   async function saveTask() {
     const client = document.getElementById('f-client').value.trim();
-    const task = document.getElementById('f-task').value.trim();
+    const task   = document.getElementById('f-task').value.trim();
     if (!client || !task) { showToast('Preenche o cliente e a tarefa!'); return; }
     const btn = document.getElementById('btnGuardar');
     btn.disabled = true; btn.textContent = 'A guardar...';
     const data = {
       client, task,
-      assignee: Array.from(document.querySelectorAll('input[name="assignee"]:checked')).map(cb => cb.value),
+      assignee: getSelectedAssignees(),
       deadline: document.getElementById('f-deadline').value || '',
-      status: document.getElementById('f-status').value,
+      status: editId ? (allTasks.find(t => t.id === editId)?.status || '') : '',
       notes: document.getElementById('f-notes').value.trim(),
       updatedAt: serverTimestamp()
     };
     try {
       if (editId) { await updateDoc(doc(db, 'tarefas', editId), data); showToast('Tarefa atualizada!'); }
-      else { await addDoc(tasksRef, { ...data, createdAt: serverTimestamp() }); showToast('Tarefa guardada! ☁️'); }
+      else        { await addDoc(tasksRef, { ...data, createdAt: serverTimestamp() }); showToast('Tarefa adicionada! ☁️'); }
       closeModal();
-    } catch(e) { showToast('Erro ao guardar.'); }
+    } catch { showToast('Erro ao guardar.'); }
     btn.disabled = false;
-    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Adicionar Tarefa';
   }
 
+  // ── Toast ──────────────────────────────────────────────────────
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 3000);
   }
 
+  // ── Global close handlers ──────────────────────────────────────
+  document.addEventListener('mousedown', e => {
+    if (!portal.contains(e.target) && !e.target.closest('.status-btn')) closePortal();
+  });
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target === document.getElementById('overlay')) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePortal(); closeModal(); } });
+  window.addEventListener('scroll', closePortal, true);
+  window.addEventListener('resize', closePortal);
+
+  // ── Bind buttons ───────────────────────────────────────────────
   document.getElementById('btnNovaTarefa').addEventListener('click', () => openModal());
-
-  // Assignee dropdown toggle
-  document.getElementById("assigneeTrigger").addEventListener("click", (e) => {
-    e.stopPropagation();
-    document.getElementById("assigneeMenu").classList.toggle("open");
-    document.getElementById("assigneeTrigger").classList.toggle("open");
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".assignee-dropdown")) {
-      document.getElementById("assigneeMenu").classList.remove("open");
-      document.getElementById("assigneeTrigger").classList.remove("open");
-    }
-  });
-
-  function updateAssigneeTrigger() {
-    const checked = Array.from(document.querySelectorAll("input[name=assignee]:checked")).map(c => c.value);
-    const txt = document.getElementById("assigneeTriggerText");
-    if (checked.length) { txt.textContent = checked.join(", "); txt.classList.add("has-value"); }
-    else { txt.textContent = "— Sem responsável —"; txt.classList.remove("has-value"); }
-  }
-
-  document.querySelectorAll("input[name=assignee]").forEach(cb => cb.addEventListener("change", updateAssigneeTrigger));
   document.getElementById('btnCloseModal').addEventListener('click', closeModal);
   document.getElementById('btnCancelar').addEventListener('click', closeModal);
   document.getElementById('btnGuardar').addEventListener('click', saveTask);
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('filterAssignee').addEventListener('change', render);
   document.getElementById('filterStatus').addEventListener('change', render);
-  document.getElementById('overlay').addEventListener('click', e => { if (e.target === document.getElementById('overlay')) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePortal(); closeModal(); } });
-  window.addEventListener('scroll', closePortal, true);
-  window.addEventListener('resize', closePortal);
 </script>
 </body>
 </html>
