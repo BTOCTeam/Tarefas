@@ -347,8 +347,6 @@
         <td>${dl ? `<span class="deadline-chip ${dl.cls}">${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td><button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button></td>
         <td><div class="actions">
-          <button class="icon-btn purple" data-action="set-progress" data-id="${t.id}" title="Em Progresso"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button class="icon-btn green" data-action="set-done" data-id="${t.id}" title="Feito"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
           <button class="icon-btn blue" data-action="edit" data-id="${t.id}" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
         </div></td>
@@ -397,8 +395,6 @@
     if (!btn) return;
     const { action, id } = btn.dataset;
     if (action === 'togglestatus') { openPortal(id, btn); return; }
-    if (action === 'set-progress') { await updateStatus(id, 'Em Progresso'); return; }
-    if (action === 'set-done')     { await updateStatus(id, 'Feito'); return; }
     if (action === 'edit')         { openModal(id); return; }
     if (action === 'del') {
       if (confirm('Eliminar esta tarefa permanentemente?')) {
