@@ -345,16 +345,17 @@
       const dl = deadlineInfo(t.deadline, isDone);
       const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
       const assigneeHTML = assignees.length ? assignees.map(a => `<span class="assignee-chip">${esc(a)}</span>`).join('') : '<span class="assignee-chip">—</span>';
-      const noteIcon = t.notes ? `<div class="notes-tooltip" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);cursor:help"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="tip">${esc(t.notes)}</span></div>` : '';
+      const noteIcon = '';
       return `<tr class="${isDone ? 'task-done' : ''}">
         <td><span class="client-name">${esc(t.client)}</span></td>
-        <td><div style="display:flex;align-items:center"><span class="task-text">${esc(t.task)}</span>${noteIcon}</div></td>
+        <td><span class="task-text">${esc(t.task)}</span></td>
         <td>${assigneeHTML}</td>
         <td>${dl ? `<span class="deadline-chip ${dl.cls}">${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td><button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button></td>
         <td><div class="actions">
           <button class="icon-btn blue" data-action="edit" data-id="${t.id}" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+          <div class="notes-tooltip"><button class="icon-btn purple" data-action="notes" data-id="${t.id}" title="Notas" style="${t.notes ? 'background:#f3f0ff;color:var(--accent);border-color:#c4b5fd;' : ''}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></button>${t.notes ? `<span class="tip">${t.notes}</span>` : ''}</div>
         </div></td>
       </tr>`;
     }).join('');
@@ -569,6 +570,75 @@
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('filterAssignee').addEventListener('change', render);
   document.getElementById('filterStatus').addEventListener('change', render);
+
+  // ── Notes Modal ─────────────────────────────────────────────────────
+  let currentNoteId = null;
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action="openNote"]');
+    if (!btn) return;
+    currentNoteId = btn.dataset.id;
+    const task = tasks.find(t => t.id === currentNoteId);
+    if (!task) return;
+    document.getElementById('noteModalTitle').textContent = 'Notas — ' + task.client;
+    document.getElementById('notesText').value = task.notes || '';
+    document.getElementById('notesOverlay').classList.add('open');
+  });
+
+  document.getElementById('btnCloseNotes').addEventListener('click', () => {
+    document.getElementById('notesOverlay').classList.remove('open');
+    currentNoteId = null;
+  });
+
+  document.getElementById('btnCancelarNotas').addEventListener('click', () => {
+    document.getElementById('notesOverlay').classList.remove('open');
+    currentNoteId = null;
+  });
+
+  document.getElementById('notesOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('notesOverlay')) {
+      document.getElementById('notesOverlay').classList.remove('open');
+      currentNoteId = null;
+    }
+  });
+
+  document.getElementById('btnGuardarNotas').addEventListener('click', () => {
+    if (!currentNoteId) return;
+    const idx = tasks.findIndex(t => t.id === currentNoteId);
+    if (idx === -1) return;
+    tasks[idx].notes = document.getElementById('notesText').value.trim();
+    save();
+    render();
+    document.getElementById('notesOverlay').classList.remove('open');
+    showToast('Notas guardadas!');
+    currentNoteId = null;
+  });
+
 </script>
+
+<!-- Notes Modal -->
+<div class="overlay" id="notesOverlay">
+  <div class="modal" id="notesModal" style="max-width:420px">
+    <div class="modal-header">
+      <h2 id="noteModalTitle">Notas</h2>
+      <button class="icon-btn" id="btnCloseNotes" style="border:none;background:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Notas Adicionais</label>
+        <textarea id="notesText" rows="6" placeholder="Escreve aqui as notas..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnCancelarNotas">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarNotas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
