@@ -397,6 +397,7 @@
   }
 
   // ── Table actions ──────────────────────────────────────────────
+  let currentNoteId = null;
   document.getElementById('tableBody').addEventListener('click', async e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -580,7 +581,6 @@
   document.getElementById('filterStatus').addEventListener('change', render);
 
   // ── Notes Modal ─────────────────────────────────────────────────────
-  let currentNoteId = null;
 
 
 
