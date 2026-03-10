@@ -34,6 +34,17 @@
   .btn-primary:hover { background: #5a39e0; transform: translateY(-1px); }
   .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
   .btn-ghost:hover { color: var(--text); }
+  .btn-danger { background: #fff1f1; color: var(--red); border: 1px solid #fca5a5; }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+
+  /* TABS */
+  .tabs { max-width: 1200px; margin: 0 auto 1.5rem; display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border); }
+  .tab { padding: 0.65rem 1.2rem; font-size: 0.88rem; font-weight: 600; color: var(--muted); cursor: pointer; border: none; background: none; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; display: flex; align-items: center; gap: 0.4rem; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 0.1rem 0.5rem; font-size: 0.72rem; font-weight: 700; }
+  .tab.active .tab-badge { background: #ede9fe; border-color: #c4b5fd; color: var(--accent); }
+
   .table-wrap { max-width: 1200px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: visible; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
   table { width: 100%; border-collapse: collapse; }
   thead th { padding: 0.9rem 1.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; text-align: left; border-bottom: 1px solid var(--border); background: var(--surface2); }
@@ -61,7 +72,11 @@
   .icon-btn.red:hover  { background: #fff1f1; color: var(--red); border-color: #fca5a5; }
   .icon-btn.green:hover  { background: #ecfdf5; color: var(--green); border-color: #6ee7b7; }
   .icon-btn.purple:hover { background: #f5f3ff; color: var(--accent); border-color: #c4b5fd; }
+  .icon-btn.orange:hover { background: #fff7ed; color: var(--orange); border-color: #fdba74; }
   .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+
+  /* Arquivo banner */
+  .archive-info { max-width: 1200px; margin: 0 auto 1rem; background: #f0fdf4; border: 1px solid #6ee7b7; border-radius: 12px; padding: 0.75rem 1.2rem; font-size: 0.85rem; color: #065f46; display: flex; align-items: center; gap: 0.5rem; }
 
   /* STATUS PORTAL */
   #status-portal { position: fixed; z-index: 9999; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.14); min-width: 160px; overflow: hidden; display: none; }
@@ -101,6 +116,16 @@
   .modal-footer { padding: 1rem 1.5rem; display: flex; gap: 0.75rem; border-top: 1px solid var(--border); }
   .modal-footer .btn { flex: 1; justify-content: center; }
 
+  /* MODAL DE CONFIRMAÇÃO DE ELIMINAÇÃO */
+  .confirm-modal { max-width: 400px; }
+  .confirm-icon { width: 52px; height: 52px; background: #fff1f1; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--red); }
+  .confirm-body { text-align: center; padding: 1.5rem; }
+  .confirm-body h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .confirm-body p { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+  .confirm-body .task-preview { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.9rem; margin: 1rem 0; text-align: left; font-size: 0.85rem; }
+  .confirm-body .task-preview strong { font-weight: 600; color: var(--text); display: block; margin-bottom: 0.2rem; }
+  .confirm-body .task-preview span { color: var(--muted); }
+
   /* TOAST */
   .toast { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--text); color: #fff; padding: 0.8rem 1.4rem; border-radius: 10px; font-size: 0.88rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); z-index: 9998; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-left: 3px solid var(--accent2); white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -131,6 +156,20 @@
   <div class="stat"><div class="stat-label">Pendentes</div><div class="stat-value" style="color:#d97706" id="stat-pending">—</div></div>
   <div class="stat"><div class="stat-label">Concluídas</div><div class="stat-value" style="color:var(--green)" id="stat-done">—</div></div>
   <div class="stat"><div class="stat-label">Em Atraso</div><div class="stat-value" style="color:var(--red)" id="stat-overdue">—</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" id="tab-active" data-tab="active">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12l2 2 4-4"/></svg>
+    Ativas
+    <span class="tab-badge" id="badge-active">0</span>
+  </button>
+  <button class="tab" id="tab-archive" data-tab="archive">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+    Arquivo
+    <span class="tab-badge" id="badge-archive">0</span>
+  </button>
 </div>
 
 <div class="toolbar">
@@ -276,6 +315,30 @@
   </div>
 </div>
 
+<!-- ✅ NOVO: Modal de Confirmação de Eliminação -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm-modal">
+    <div class="confirm-body">
+      <div class="confirm-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+      <h3>Eliminar tarefa?</h3>
+      <p>Esta ação é permanente e não pode ser desfeita.</p>
+      <div class="task-preview" id="confirmPreview">
+        <strong id="confirmClient">—</strong>
+        <span id="confirmTask">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnCancelarConfirm">Cancelar</button>
+      <button class="btn btn-danger" id="btnConfirmarEliminar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -298,11 +361,54 @@
   let editId = null;
   let activeStatusId = null;
   let currentNoteId = null;
+  let currentTab = 'active'; // 'active' | 'archive'
+
+  // ── Confirmação de eliminação ──────────────────────────────────
+  let pendingDeleteId = null;
+
+  function openConfirmDelete(id) {
+    const task = allTasks.find(t => t.id === id);
+    if (!task) return;
+    pendingDeleteId = id;
+    document.getElementById('confirmClient').textContent = task.client || '—';
+    document.getElementById('confirmTask').textContent = task.task || '—';
+    document.getElementById('confirmOverlay').classList.add('open');
+  }
+
+  function closeConfirmDelete() {
+    document.getElementById('confirmOverlay').classList.remove('open');
+    pendingDeleteId = null;
+  }
+
+  document.getElementById('btnCancelarConfirm').addEventListener('click', closeConfirmDelete);
+  document.getElementById('confirmOverlay').addEventListener('click', e => { if (e.target.id === 'confirmOverlay') closeConfirmDelete(); });
+
+  document.getElementById('btnConfirmarEliminar').addEventListener('click', async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    closeConfirmDelete();
+    try {
+      await deleteDoc(doc(db, 'tarefas', id));
+      showToast('Tarefa eliminada.');
+    } catch { showToast('Erro ao eliminar.'); }
+  });
+
+  // ── Tabs ───────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentTab = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      // Na tab de arquivo, esconder filtro de status (só "Feito" existe lá)
+      document.getElementById('filterStatus').style.display = currentTab === 'archive' ? 'none' : '';
+      render();
+    });
+  });
 
   const STATUS_META = {
-    '':               { label: 'Pendente',      cls: 'pending'  },
+    '':             { label: 'Pendente',    cls: 'pending'  },
     'Em Progresso': { label: 'Em Progresso', cls: 'progress' },
-    'Feito':        { label: 'Feito',         cls: 'done'     },
+    'Feito':        { label: 'Feito',        cls: 'done'     },
   };
   const chevron = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
 
@@ -310,15 +416,8 @@
   onSnapshot(tasksRef, snap => {
     allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     allTasks.sort((a, b) => (a.status === 'Feito' ? 1 : 0) - (b.status === 'Feito' ? 1 : 0));
-    
-    // Filtro temporal para tarefas concluídas (esconder após 7 dias)
-    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    allTasks = allTasks.filter(t => {
-      if (t.status !== 'Feito') return true;
-      const updated = t.updatedAt?.toMillis ? t.updatedAt.toMillis() : (t.updatedAt?.seconds ? t.updatedAt.seconds * 1000 : 0);
-      return updated === 0 || updated > oneWeekAgo;
-    });
-    
+    // ✅ REMOVIDO: filtro que eliminava tarefas concluídas após 7 dias
+    // Agora as tarefas "Feito" vão para o Arquivo e ficam lá para sempre
     render();
     document.getElementById('syncDot').classList.add('online');
   }, () => showToast('Erro de ligação ao Firebase.'));
@@ -344,29 +443,44 @@
     const fS = document.getElementById('filterStatus').value;
     const fSActive = fS !== 'all';
 
-    const filtered = allTasks.filter(t => {
-      const matchQ = (t.client||'').toLowerCase().includes(q) || (t.task||'').toLowerCase().includes(q) || (t.notes||'').toLowerCase().includes(q);
-      const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
-      const matchA = !fA || assignees.includes(fA);
-      const matchS = !fSActive || (t.status || '') === fS;
-      return matchQ && matchA && matchS;
-    });
+    // Separar tarefas ativas de arquivo
+    const activeTasks  = allTasks.filter(t => t.status !== 'Feito');
+    const archiveTasks = allTasks.filter(t => t.status === 'Feito');
 
+    // Atualizar badges
+    document.getElementById('badge-active').textContent  = activeTasks.length;
+    document.getElementById('badge-archive').textContent = archiveTasks.length;
+
+    // Stats (baseado em todas as tarefas)
     const today = new Date(); today.setHours(0,0,0,0);
-    const done = allTasks.filter(t => t.status === 'Feito').length;
-    const overdue = allTasks.filter(t => t.status !== 'Feito' && t.deadline && new Date(t.deadline+'T00:00:00') < today).length;
-    
-    document.getElementById('stat-total').textContent = allTasks.length;
-    document.getElementById('stat-pending').textContent = allTasks.length - done;
-    document.getElementById('stat-done').textContent = done;
+    const done    = archiveTasks.length;
+    const overdue = activeTasks.filter(t => t.deadline && new Date(t.deadline+'T00:00:00') < today).length;
+    document.getElementById('stat-total').textContent   = allTasks.length;
+    document.getElementById('stat-pending').textContent = activeTasks.length;
+    document.getElementById('stat-done').textContent    = done;
     document.getElementById('stat-overdue').textContent = overdue;
-    
+
     document.getElementById('filterAssignee').classList.toggle('active', !!fA);
     document.getElementById('filterStatus').classList.toggle('active', fSActive);
 
+    // Pool a renderizar consoante tab ativa
+    const pool = currentTab === 'archive' ? archiveTasks : activeTasks;
+
+    const filtered = pool.filter(t => {
+      const matchQ = (t.client||'').toLowerCase().includes(q) || (t.task||'').toLowerCase().includes(q) || (t.notes||'').toLowerCase().includes(q);
+      const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
+      const matchA = !fA || assignees.includes(fA);
+      const matchS = currentTab === 'archive' ? true : (!fSActive || (t.status || '') === fS);
+      return matchQ && matchA && matchS;
+    });
+
     const tbody = document.getElementById('tableBody');
+
     if (!filtered.length) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">${allTasks.length ? 'Nenhum resultado com estes filtros.' : 'Ainda não há tarefas. Clique em "Nova Tarefa" para começar!'}</div></td></tr>`;
+      const msg = currentTab === 'archive'
+        ? (archiveTasks.length ? 'Nenhum resultado com estes filtros.' : 'Ainda não há tarefas concluídas no arquivo.')
+        : (activeTasks.length  ? 'Nenhum resultado com estes filtros.' : 'Ainda não há tarefas. Clique em "Nova Tarefa" para começar!');
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">${msg}</div></td></tr>`;
       return;
     }
 
@@ -376,15 +490,18 @@
       const dl = deadlineInfo(t.deadline, isDone);
       const assignees = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
       const assigneeHTML = assignees.length ? assignees.map(a => `<span class="assignee-chip">${esc(a)}</span>`).join('') : '<span class="assignee-chip">—</span>';
-      
-      return `<tr class="${isDone ? 'task-done' : ''}">
-        <td><span class="client-name">${esc(t.client)}</span></td>
-        <td><span class="task-text">${esc(t.task)}</span></td>
-        <td>${assigneeHTML}</td>
-        <td>${dl ? `<span class="deadline-chip ${dl.cls}">${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-        <td style="text-align:center"><button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button></td>
-        <td style="text-align:center">
-          <div class="actions">
+
+      // Na tab arquivo: só mostrar botão de restaurar e eliminar
+      const actionsHTML = currentTab === 'archive'
+        ? `<div class="actions">
+            <button class="icon-btn orange" data-action="restore" data-id="${t.id}" title="Restaurar tarefa">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            </button>
+            <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar permanentemente">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>`
+        : `<div class="actions">
             <button class="icon-btn blue" data-action="edit" data-id="${t.id}" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
             <button class="icon-btn red" data-action="del" data-id="${t.id}" title="Eliminar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             <div class="notes-tooltip">
@@ -393,8 +510,20 @@
               </button>
               ${t.notes ? `<span class="tip">${esc(t.notes)}</span>` : ''}
             </div>
-          </div>
+          </div>`;
+
+      return `<tr class="${isDone ? 'task-done' : ''}">
+        <td><span class="client-name">${esc(t.client)}</span></td>
+        <td><span class="task-text">${esc(t.task)}</span></td>
+        <td>${assigneeHTML}</td>
+        <td>${dl ? `<span class="deadline-chip ${dl.cls}">${esc(dl.label)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
+        <td style="text-align:center">
+          ${currentTab === 'archive'
+            ? `<span class="status-btn done">${meta.label}</span>`
+            : `<button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button>`
+          }
         </td>
+        <td style="text-align:center">${actionsHTML}</td>
       </tr>`;
     }).join('');
   }
@@ -430,7 +559,7 @@
   async function updateStatus(id, status) {
     try {
       await updateDoc(doc(db, 'tarefas', id), { status, updatedAt: serverTimestamp() });
-      showToast(status === 'Feito' ? 'Tarefa concluída! ✅' : 'Status atualizado!');
+      showToast(status === 'Feito' ? 'Tarefa concluída! Movida para Arquivo ✅' : 'Status atualizado!');
     } catch { showToast('Erro ao atualizar status.'); }
   }
 
@@ -442,11 +571,17 @@
     if (action === 'togglestatus') { openPortal(id, btn); return; }
     if (action === 'edit')         { openModal(id); return; }
     if (action === 'openNote')     { openNoteModal(id); return; }
+    if (action === 'restore') {
+      // ✅ Restaurar tarefa do arquivo para ativas
+      try {
+        await updateDoc(doc(db, 'tarefas', id), { status: '', updatedAt: serverTimestamp() });
+        showToast('Tarefa restaurada para Ativas!');
+      } catch { showToast('Erro ao restaurar tarefa.'); }
+      return;
+    }
     if (action === 'del') {
-      if (confirm('Eliminar esta tarefa permanentemente?')) {
-        await deleteDoc(doc(db, 'tarefas', id));
-        showToast('Tarefa removida.');
-      }
+      // ✅ Modal de confirmação em vez de confirm() nativo
+      openConfirmDelete(id);
     }
   });
 
@@ -455,7 +590,6 @@
     currentNoteId = id;
     const task = allTasks.find(t => t.id === id);
     if (!task) return;
-
     document.getElementById('noteModalTitle').textContent = 'Notas — ' + task.client;
     document.getElementById('notesText').value = task.notes || '';
     document.getElementById('notesOverlay').classList.add('open');
@@ -470,10 +604,7 @@
     if (!currentNoteId) return;
     const newNote = document.getElementById('notesText').value.trim();
     try {
-      await updateDoc(doc(db, 'tarefas', currentNoteId), { 
-        notes: newNote,
-        updatedAt: serverTimestamp() 
-      });
+      await updateDoc(doc(db, 'tarefas', currentNoteId), { notes: newNote, updatedAt: serverTimestamp() });
       closeNoteModal();
       showToast('Notas guardadas!');
     } catch { showToast('Erro ao guardar notas.'); }
@@ -527,10 +658,10 @@
 
     if (id) {
       const t = allTasks.find(x => x.id === id);
-      document.getElementById('f-client').value = t.client || '';
-      document.getElementById('f-task').value   = t.task || '';
+      document.getElementById('f-client').value   = t.client || '';
+      document.getElementById('f-task').value     = t.task || '';
       document.getElementById('f-deadline').value = t.deadline || '';
-      document.getElementById('f-notes').value  = t.notes || '';
+      document.getElementById('f-notes').value    = t.notes || '';
       const saved = Array.isArray(t.assignee) ? t.assignee : (t.assignee ? [t.assignee] : []);
       document.querySelectorAll('input[name="assignee"]').forEach(cb => { if (saved.includes(cb.value)) cb.checked = true; });
     } else {
@@ -565,9 +696,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          service_id:  EMAILJS_SERVICE,
-          template_id: EMAILJS_TEMPLATE,
-          user_id:     EMAILJS_KEY,
+          service_id: EMAILJS_SERVICE, template_id: EMAILJS_TEMPLATE, user_id: EMAILJS_KEY,
           template_params: { to_email: to, name, task, client, deadline: deadline || 'Sem data' }
         })
       });
@@ -578,10 +707,10 @@
     const client = document.getElementById('f-client').value.trim();
     const task   = document.getElementById('f-task').value.trim();
     if (!client || !task) { showToast('Preenche o cliente e a tarefa!'); return; }
-    
+
     const btn = document.getElementById('btnGuardar');
     btn.disabled = true; btn.textContent = 'A guardar...';
-    
+
     const assignees = getSelectedAssignees();
     const deadline  = document.getElementById('f-deadline').value || '';
     const data = {
@@ -623,8 +752,8 @@
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('filterAssignee').addEventListener('change', render);
   document.getElementById('filterStatus').addEventListener('change', render);
-  
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePortal(); closeModal(); closeNoteModal(); } });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePortal(); closeModal(); closeNoteModal(); closeConfirmDelete(); } });
   window.addEventListener('scroll', closePortal, true);
 </script>
 
