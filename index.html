@@ -676,19 +676,19 @@
     editId = null;
   }
 
-  // ── EmailJS e Gravação ──────────────────────────────────────────
+  // ── EmailJS ────────────────────────────────────────────────────
   const EMAILJS_SERVICE  = 'service_6rvn33h';
   const EMAILJS_TEMPLATE = 'template_0mwhq1q';
   const EMAILJS_KEY      = 'ZkRFx3yGH-xnC1m5e';
 
   const EMAILS = {
-    'Tiago Fachada':  null,
-    'Tiago Pereira':  null,
-    'Miguel Leitão':  'miguel.leitao@btocnet.com',
-    'Vânia Costa':    null,
+    'Tiago Fachada': null,
+    'Tiago Pereira': null,
+    'Miguel Leitão': 'miguel.leitao@btocnet.com',
+    'Vânia Costa':   null,
   };
 
-  async function sendEmail(name, task, client, deadline) {
+  async function sendEmail(name, task, client, deadline, notes) {
     const to = EMAILS[name];
     if (!to) return;
     try {
@@ -697,7 +697,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           service_id: EMAILJS_SERVICE, template_id: EMAILJS_TEMPLATE, user_id: EMAILJS_KEY,
-          template_params: { to_email: to, name, task, client, deadline: deadline || 'Sem data' }
+          template_params: { to_email: to, name, task, client, deadline: deadline || 'Sem data', notes: notes || '' }
         })
       });
     } catch (e) { console.warn('Email não enviado:', e); }
@@ -726,11 +726,11 @@
         const prevAssignees = Array.isArray(prev?.assignee) ? prev.assignee : (prev?.assignee ? [prev.assignee] : []);
         await updateDoc(doc(db, 'tarefas', editId), data);
         const newAssignees = assignees.filter(a => !prevAssignees.includes(a));
-        for (const name of newAssignees) await sendEmail(name, task, client, deadline);
+        for (const name of newAssignees) await sendEmail(name, task, client, deadline, data.notes);
         showToast('Tarefa atualizada!');
       } else {
         await addDoc(tasksRef, { ...data, createdAt: serverTimestamp() });
-        for (const name of assignees) await sendEmail(name, task, client, deadline);
+        for (const name of assignees) await sendEmail(name, task, client, deadline, data.notes);
         showToast('Tarefa adicionada! ☁️');
       }
       closeModal();
