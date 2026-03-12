@@ -676,10 +676,8 @@
     editId = null;
   }
 
-  // ── EmailJS ────────────────────────────────────────────────────
-  const EMAILJS_SERVICE  = 'service_6rvn33h';
-  const EMAILJS_TEMPLATE = 'template_0mwhq1q';
-  const EMAILJS_KEY      = 'ZkRFx3yGH-xnC1m5e';
+  // ── Email via Cloudflare Worker ────────────────────────────────
+  const WORKER_URL = 'https://btocemail.deep-twin7.workers.dev/';
 
   const EMAILS = {
     'Tiago Fachada': null,
@@ -692,14 +690,12 @@
     const to = EMAILS[name];
     if (!to) return;
     try {
-      await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service_id: EMAILJS_SERVICE, template_id: EMAILJS_TEMPLATE, user_id: EMAILJS_KEY,
-          template_params: { to_email: to, name, task, client, deadline: deadline || 'Sem data', notes: notes || '' }
-        })
+        body: JSON.stringify({ name, task, client, deadline: deadline || 'Sem data', notes: notes || '', to })
       });
+      if (!res.ok) console.warn('Worker erro:', await res.text());
     } catch (e) { console.warn('Email não enviado:', e); }
   }
 
