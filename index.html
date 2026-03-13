@@ -398,6 +398,10 @@ tbody tr.row-overdue:hover { background: color-mix(in srgb, var(--red) 8%, trans
 .cf-table th.month-col { text-align: center; border-left: 1px solid #ddd; }
 [data-theme="dark"] .cf-table th.month-col { border-left-color: #2a2f3e; }
 .cf-table td { padding: 7px 10px; border-bottom: 1px solid #ddd; vertical-align: middle; color: #111; }
+.cf-table td:nth-child(1), .cf-table td:nth-child(2), .cf-table td:nth-child(3) { background: #f8f6ff; }
+.cf-table th:nth-child(1), .cf-table th:nth-child(2), .cf-table th:nth-child(3) { background: #ede9ff; }
+[data-theme="dark"] .cf-table td:nth-child(1), [data-theme="dark"] .cf-table td:nth-child(2), [data-theme="dark"] .cf-table td:nth-child(3) { background: #252040; }
+[data-theme="dark"] .cf-table th:nth-child(1), [data-theme="dark"] .cf-table th:nth-child(2), [data-theme="dark"] .cf-table th:nth-child(3) { background: #2d2850; }
 [data-theme="dark"] .cf-table td { border-bottom-color: #2a2f3e; color: #e8eaf0; }
 .cf-table td.cell-edit { text-align: center; border-left: 1px solid #e0e0e0; }
 [data-theme="dark"] .cf-table td.cell-edit { border-left-color: #252a38; }
@@ -557,11 +561,13 @@ tbody tr.row-overdue:hover { background: color-mix(in srgb, var(--red) 8%, trans
 <div class="page" id="page-controlo">
 <div class="cf-wrap">
   <!-- Year selector -->
-  <div style="max-width:1600px;margin:0 auto 16px;display:flex;align-items:center;gap:6px;">
-    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-right:4px;">Ano</span>
-    <button class="cf-year-btn active" data-year="2026" onclick="cfSetYear(2026)">2026</button>
-    <button class="cf-year-btn" data-year="2025" onclick="cfSetYear(2025)">2025</button>
-    <span id="cfYearStatus" style="font-size:11px;color:var(--muted);margin-left:8px;"></span>
+  <div style="max-width:1600px;margin:0 auto 16px;display:flex;align-items:center;gap:8px;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Ano</span>
+    <select id="cfYearSelect" onchange="cfSetYear(+this.value)" style="font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;">
+      <option value="2026">2026</option>
+      <option value="2025">2025</option>
+    </select>
+    <span id="cfYearStatus" style="font-size:11px;color:var(--muted);margin-left:4px;"></span>
   </div>
   <div style="max-width:1600px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;">
     <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Resumo</span>
@@ -1450,9 +1456,7 @@ async function cfSetYear(year) {
   if (cfActiveYear === year) return;
   cfActiveYear = year;
 
-  document.querySelectorAll('.cf-year-btn').forEach(b => {
-    b.classList.toggle('active', +b.dataset.year === year);
-  });
+  document.getElementById('cfYearSelect').value = String(year);
 
   const page = document.getElementById('page-controlo');
   page.classList.remove('year-2025','year-2026');
