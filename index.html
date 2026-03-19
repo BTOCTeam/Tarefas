@@ -1778,7 +1778,7 @@ cfRenderStats();
       await updateDoc(doc(db, 'tarefas', id), { status, updatedAt: serverTimestamp() });
       if (status === 'Feito') {
         const task = allTasks.find(t => t.id === id);
-        if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee);
+        if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee, task.deadline, task.notes);
         showToast('Tarefa concluída! Movida para Arquivo ✅');
       } else {
         showToast('Status atualizado!');
@@ -1864,19 +1864,21 @@ cfRenderStats();
   function closeModal() { document.getElementById('overlay').classList.remove('open'); editId = null; }
 
   // EmailJS
-  const EMAILJS_SERVICE  = 'service_6rvn33h';
-  const EMAILJS_TEMPLATE = 'template_0mwhq1q';
-  const EMAILJS_KEY      = 'ZkRFx3yGH-xnC1m5e';
+  const EMAILJS_SERVICE           = 'service_6rvn33h';
+  const EMAILJS_TEMPLATE          = 'template_0mwhq1q';
+  const EMAILJS_TEMPLATE_CONCLUIDA = 'template_brr3f3m';
+  const EMAILJS_KEY               = 'ZkRFx3yGH-xnC1m5e';
   const EMAILS = { 'Tiago Fachada': null, 'Tiago Pereira': null, 'Miguel Leitão': 'miguel.leitao@btocnet.com', 'Vânia Costa': null };
-  async function sendEmailConcluida(creatorName, task, client, assignees) {
+  async function sendEmailConcluida(creatorName, task, client, assignees, deadline, notes) {
     const to = EMAILS[creatorName];
     if (!to) return;
     const assigneeStr = Array.isArray(assignees) ? assignees.join(', ') : (assignees || '');
+    const today = new Date().toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
     try {
       await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ service_id: EMAILJS_SERVICE, template_id: EMAILJS_TEMPLATE, user_id: EMAILJS_KEY,
-          template_params: { to_email: to, name: creatorName, task: `✅ Concluída: ${task}`, client, deadline: `Concluída por: ${assigneeStr}`, notes: 'Esta tarefa foi marcada como concluída.' } })
+        body: JSON.stringify({ service_id: EMAILJS_SERVICE, template_id: EMAILJS_TEMPLATE_CONCLUIDA, user_id: EMAILJS_KEY,
+          template_params: { to_email: to, name: creatorName, task, client, deadline: today, notes: `Concluída por: ${assigneeStr}` } })
       });
     } catch(e) { console.warn('Email de conclusão não enviado:', e); }
   }
