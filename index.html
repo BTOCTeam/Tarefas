@@ -2092,6 +2092,10 @@ async function rpSaveAtrib() {
         updatedAt: fs.serverTimestamp()
       });
       if (typeof showToast === 'function') showToast('✅ Tarefa "' + taskLabel + '" criada!');
+      // Send email to assignee
+      if (typeof sendEmail === 'function') {
+        await sendEmail(pessoa, taskLabel, r.c, '', '');
+      }
     } catch(e) {
       console.error('Erro ao criar tarefa:', e);
       if (typeof showToast === 'function') showToast('❌ Erro ao criar tarefa: ' + e.message);
@@ -2498,6 +2502,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
   }
 
   window.showToast = function(msg) { showToast(msg); };
+  window.sendEmail = async (name, task, client, deadline, notes) => sendEmail(name, task, client, deadline, notes);
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
