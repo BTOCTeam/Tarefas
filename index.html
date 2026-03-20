@@ -1990,15 +1990,6 @@ function rpOpenCellDropdown(idx, mi, tdEl) {
       rpCloseDropdown();
       rpRender();
       rpScheduleSave();
-      // Ask if user wants to reassign the responsible
-      if (opt.value) {
-        setTimeout(() => {
-          const r = rpData[idx];
-          if (confirm(`Deseja alterar o responsável pela tarefa de "${r.c}"?`)) {
-            rpOpenAtrib(idx);
-          }
-        }, 150);
-      }
     };
     dd.appendChild(item);
   });
@@ -2087,6 +2078,7 @@ async function rpSaveAtrib() {
       const taskLabel = mesVal ? `${mesVal} - ${mes}` : `Report ${mes}`;
       const fs = await cfGetFs();
       const db = window._cfDb;
+      if (!fs.addDoc) throw new Error('addDoc não disponível');
       await fs.addDoc(fs.collection(db, 'tarefas'), {
         client: r.c,
         task: taskLabel,
@@ -2098,11 +2090,10 @@ async function rpSaveAtrib() {
         createdAt: fs.serverTimestamp(),
         updatedAt: fs.serverTimestamp()
       });
-      // Show toast if available
-      if (typeof showToast === 'function') showToast('✅ Tarefa criada em Tarefas!');
-      else alert('✅ Tarefa "Report ' + mes + '" criada para ' + pessoa + '!');
+      if (typeof showToast === 'function') showToast('✅ Tarefa "' + taskLabel + '" criada!');
     } catch(e) {
-      console.warn('Erro ao criar tarefa:', e);
+      console.error('Erro ao criar tarefa:', e);
+      if (typeof showToast === 'function') showToast('❌ Erro ao criar tarefa: ' + e.message);
     }
   }
 }
