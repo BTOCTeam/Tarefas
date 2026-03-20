@@ -1600,6 +1600,7 @@ async function cfSetYear(year) {
     cfData = cfData2026;
     document.getElementById('cfYearStatus').textContent = '';
     cfInitSections(); cfPopulateFilters(); cfRender();
+    cfRenderStats();
   } else {
     document.getElementById('cfYearStatus').textContent = '⏳ A carregar...';
     cfLoadYear2025();
@@ -1649,10 +1650,31 @@ function cfScheduleSave() {
 }
 
 document.getElementById('page-controlo').classList.add('year-2026');
-cfInitSections(); cfPopulateFilters(); cfRender();
-// Pre-select previous month in stats dropdown
-document.getElementById('cfStatMonth').value = String((new Date().getMonth() + 11) % 12);
-cfRenderStats();
+
+// Load 2026 from Firebase on startup
+async function cfLoadYear2026() {
+  cfInitSections(); cfPopulateFilters(); cfRender();
+  document.getElementById('cfStatMonth').value = String((new Date().getMonth() + 11) % 12);
+  cfRenderStats();
+  try {
+    const fs = await cfGetFs();
+    const db = window._cfDb;
+    const snap = await fs.getDoc(fs.doc(db, 'controloFiscal', '2026'));
+    if (snap.exists()) {
+      const loaded = JSON.parse(snap.data().data);
+      // Merge: keep structure from cfRawData, fill values from Firebase
+      Object.keys(loaded).forEach(section => {
+        if (cfData2026[section]) cfData2026[section] = loaded[section];
+      });
+      cfRender();
+      cfRenderStats();
+    } else {
+      // First time: save current HTML data to Firebase
+      await cfSaveYearToFirebase(2026);
+    }
+  } catch(e) { console.warn('2026 Firebase load failed, using local:', e); }
+}
+cfLoadYear2026();
 </script>
 
 <!-- Tarefas (Firebase module) -->
