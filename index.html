@@ -2059,12 +2059,13 @@ function rpCloseAtrib() {
 }
 async function rpSaveAtrib() {
   if (rpAtribIdx === null) return;
+  const savedIdx = rpAtribIdx; // capture before async
   const pessoa = document.getElementById('rpAtribPessoa').value;
   const criadoPor = document.getElementById('rpAtribCriadoPor').value;
   const mes = document.getElementById('rpAtribMes').value;
-  rpData[rpAtribIdx].atrib = pessoa;
-  rpData[rpAtribIdx].atribCriadoPor = criadoPor;
-  rpData[rpAtribIdx].atribMes = mes;
+  rpData[savedIdx].atrib = pessoa;
+  rpData[savedIdx].atribCriadoPor = criadoPor;
+  rpData[savedIdx].atribMes = mes;
   rpCloseAtrib();
   rpRender();
   rpScheduleSave();
@@ -2072,7 +2073,7 @@ async function rpSaveAtrib() {
   // Create task automatically if pessoa and mes are set
   if (pessoa && mes) {
     try {
-      const r = rpData[rpAtribIdx];
+      const r = rpData[savedIdx];
       const mesIdx = RP_MESES_FULL.indexOf(mes);
       const mesVal = mesIdx >= 0 ? r.m[mesIdx] : '';
       const taskLabel = mesVal ? `${mesVal} - ${mes}` : `Report ${mes}`;
@@ -2496,6 +2497,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
     btn.disabled = false;
   }
 
+  window.showToast = function(msg) { showToast(msg); };
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
