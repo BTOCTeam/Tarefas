@@ -669,13 +669,18 @@ tbody tr.row-overdue:hover { background: color-mix(in srgb, var(--red) 8%, trans
     <span id="rpStatus" style="font-size:11px;color:var(--muted);margin-left:8px;"></span>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <input type="text" id="rpSearch" placeholder="🔍 Pesquisar cliente..." oninput="rpRender()" style="padding:7px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;outline:none;width:220px;">
-      <select id="rpMesFilter" onchange="rpRender()" style="padding:7px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;outline:none;cursor:pointer;">
-        <option value="">Todos os meses</option>
-        <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
-        <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
-        <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
-        <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
-      </select>
+      <div style="position:relative;" id="rpMesWrap">
+        <button onclick="rpToggleMesDD()" id="rpMesBtn" style="padding:7px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;min-width:160px;justify-content:space-between;">
+          <span id="rpMesBtnLabel">Todos os meses</span>
+          <span>&#9660;</span>
+        </button>
+        <div id="rpMesDD" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:1000;min-width:180px;padding:6px 0;max-height:320px;overflow-y:auto;">
+          <label style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="rpMesAll" checked onchange="rpMesAllToggle(this)"> Todos os meses
+          </label>
+          <div id="rpMesCbList"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="cf-table-wrap"><table class="cf-table" id="rpTable"><thead></thead><tbody></tbody></table></div>
@@ -1999,10 +2004,56 @@ function rpOpenCellDropdown(idx, mi, tdEl) {
   setTimeout(() => document.addEventListener('click', rpOnDocClick), 0);
 }
 
+function rpGetSelectedMonths() {
+  const cbs = document.querySelectorAll('.rpMesCb:checked');
+  if (cbs.length === 12 || cbs.length === 0) return [0,1,2,3,4,5,6,7,8,9,10,11];
+  return Array.from(cbs).map(cb => +cb.value);
+}
+
+function rpToggleMesDD() {
+  const dd = document.getElementById('rpMesDD');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+  if (dd.style.display === 'block') {
+    setTimeout(() => document.addEventListener('click', rpMesDDOutside), 0);
+  }
+}
+
+function rpMesDDOutside(e) {
+  if (!document.getElementById('rpMesWrap').contains(e.target)) {
+    document.getElementById('rpMesDD').style.display = 'none';
+    document.removeEventListener('click', rpMesDDOutside);
+  }
+}
+
+function rpMesAllToggle(cb) {
+  document.querySelectorAll('.rpMesCb').forEach(c => c.checked = cb.checked);
+  rpUpdateMesLabel();
+  rpRender();
+}
+
+function rpMesChanged() {
+  const cbs = document.querySelectorAll('.rpMesCb');
+  const checked = document.querySelectorAll('.rpMesCb:checked');
+  document.getElementById('rpMesAll').checked = checked.length === cbs.length;
+  rpUpdateMesLabel();
+  rpRender();
+}
+
+function rpUpdateMesLabel() {
+  const checked = Array.from(document.querySelectorAll('.rpMesCb:checked'));
+  const label = document.getElementById('rpMesBtnLabel');
+  if (checked.length === 0 || checked.length === 12) {
+    label.textContent = 'Todos os meses';
+  } else if (checked.length === 1) {
+    label.textContent = RP_MESES_FULL[+checked[0].value];
+  } else {
+    label.textContent = checked.length + ' meses';
+  }
+}
+
 function rpRender() {
   const q = document.getElementById('rpSearch').value.toLowerCase();
-  const mf = document.getElementById('rpMesFilter').value;
-  const miList = mf !== '' ? [+mf] : [0,1,2,3,4,5,6,7,8,9,10,11];
+  const miList = rpGetSelectedMonths();
   const rows = rpData.filter(r => !q || r.c.toLowerCase().includes(q));
   const thead = document.querySelector('#rpTable thead');
   const tbody = document.querySelector('#rpTable tbody');
@@ -2039,6 +2090,16 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     }
   });
 });
+// Init checkbox list
+(function() {
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const list = document.getElementById('rpMesCbList');
+  list.innerHTML = meses.map((m,i) =>
+    '<label style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;">' +
+    '<input type="checkbox" class="rpMesCb" value="' + i + '" checked onchange="rpMesChanged()"> ' + m +
+    '</label>'
+  ).join('');
+})();
 // Init render (empty)
 rpRender();
 
