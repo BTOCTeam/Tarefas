@@ -1078,7 +1078,8 @@ function cfM10OpenDropdown(idx, field, tdEl) {
     ? [{ value: '', label: 'Limpar' }, ...M10_MESES.map(m => ({ value: m, label: m }))]
     : [{ value: '', label: 'Limpar' }, ...M10_PESSOAS.map(p => ({ value: p, label: p }))];
   // Use the actual clicked element rect (fixed positioning, viewport coords)
-  const rect = (event && event.target) ? event.target.closest('td').getBoundingClientRect() : tdEl.getBoundingClientRect();
+  const triggerEl = (event && event.target) ? event.target.closest('td') : tdEl;
+  const rect = triggerEl.getBoundingClientRect();
   const dd = document.createElement('div');
   dd.className = 'cf-dropdown';
   const hdr = document.createElement('div');
@@ -1101,12 +1102,7 @@ function cfM10OpenDropdown(idx, field, tdEl) {
   });
   document.body.appendChild(dd);
   cfOpenDropdown = dd;
-  const ddW = 160, ddH = options.length * 32 + 36;
-  let top = rect.bottom + 4, left = rect.left;
-  if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
-  if (top + ddH > window.innerHeight - 8) top = rect.top - ddH - 4;
-  // cf-dropdown is position:fixed so no scroll offset needed
-  dd.style.top = top + 'px'; dd.style.left = left + 'px';
+  requestAnimationFrame(() => cfDropdownPosition(dd, triggerEl));
   setTimeout(() => document.addEventListener('click', cfOnDocClick), 0);
 }
 
@@ -1219,6 +1215,22 @@ function cfGetTrimesterMonths(mi) {
   return [t*3, t*3+1, t*3+2];
 }
 
+function cfDropdownPosition(dd, triggerEl) {
+  // Always use the event's currentTarget for accurate viewport coords
+  const rect = triggerEl.getBoundingClientRect();
+  const ddRect = dd.getBoundingClientRect();
+  const ddH = ddRect.height || 300;
+  const ddW = ddRect.width || 180;
+  let top = rect.bottom + 4;
+  let left = rect.left;
+  if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
+  if (left < 4) left = 4;
+  if (top + ddH > window.innerHeight - 8) top = rect.top - ddH - 4;
+  if (top < 4) top = 4;
+  dd.style.top = top + 'px';
+  dd.style.left = left + 'px';
+}
+
 function cfEditCell(idx, mi, tdEl) {
   cfCloseDropdown();
   const row = cfData[cfActiveSection][idx];
@@ -1255,13 +1267,8 @@ function cfEditCell(idx, mi, tdEl) {
   });
   document.body.appendChild(dd);
   cfOpenDropdown = dd;
-  let top = rect.bottom + 4;
-  let left = rect.left;
-  const ddW = isTrimestral ? 210 : 170, ddH = opts.length * 32 + 36;
-  if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
-  if (top + ddH > window.innerHeight - 8) top = rect.top - ddH - 4;
-  dd.style.top = top + 'px';
-  dd.style.left = left + 'px';
+  // Position after append so dimensions are available
+  requestAnimationFrame(() => cfDropdownPosition(dd, tdEl));
   setTimeout(() => document.addEventListener('click', cfOnDocClick), 0);
 }
 
