@@ -899,29 +899,37 @@ const cfRawData = {
     {c:'PACE',g:'PY',t:'BTOC',m:['Submetido','Submetido',...Array(10).fill('')]},
   ],
   'Modelo 10': [
-    {c:'NUMERO UM - MIDAS',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'BOTAO AZUL - MR.BLUE',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'AFTERHOUSE SA',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'TOPCHALLENGE SGPS SA',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'Imoforstart SGPS SA',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'More Taste Lda',g:'ESTORIL',t:'-',m:Array(12).fill('')},
-    {c:'MIND SOFTWARE SA',g:'MIND',t:'-',m:Array(12).fill('')},
-    {c:'Petrin SA',g:'PETRIN',t:'-',m:Array(12).fill('')},
-    {c:'BIOSURFIT SA',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
+    {c:'NUMERO UM - REPARAÇÃO AUTOMOVEL, SA (MIDAS)',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'BOTAO AZUL - COMERCIO DE VESTUÁRIO, SA (MR.BLUE)',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'AFTERHOUSE S.A.',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'TOPCHALLENGE SGPS, S.A',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'Imoforstart, SGPS, S.A.',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'More Taste, Lda',g:'ESTORIL',t:'-',m:Array(12).fill('')},
+    {c:'MIND SOFTWARE MULTIMEDIA E INDUSTRIAL SA',g:'MIND',t:'-',m:Array(12).fill('')},
+    {c:'Petrin - Petróleos e Investimentos, S.A.',g:'PETRIN',t:'-',m:Array(12).fill('')},
+    {c:'BIOSURFIT S.A. /SPINT',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
     {c:'Radical e trivial',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
-    {c:'Alfastandard Lda',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
-    {c:'PRIME YIELD LDA',g:'PY',t:'-',m:Array(12).fill('')},
-    {c:'OGER - SGPS SA',g:'PY',t:'-',m:Array(12).fill('')},
-    {c:'IMOSLEN SA',g:'PY',t:'-',m:Array(12).fill('')},
-    {c:'MELHOR ESTRATÉGIA LDA',g:'PY',t:'-',m:Array(12).fill('')},
-    {c:'FOREST BAY LDA',g:'BALLY',t:'-',m:Array(12).fill('')},
-    {c:'Ask SA',g:'ASK',t:'-',m:Array(12).fill('')},
-    {c:'Ask Patrimónios SA',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'Alfastandard - Investments, Unipessoal Lda',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
+    {c:'Outdoit Associação Combater O Cancro',g:'BIOSURFIT',t:'-',m:Array(12).fill('')},
+    {c:'PRIME YIELD - CONSULTADORIA E AVALIAÇÃO IMOBILIÁRIA LDA',g:'PY',t:'-',m:Array(12).fill('')},
+    {c:'OGER - SGPS, S.A.',g:'PY',t:'-',m:Array(12).fill('')},
+    {c:'IMOSLEN, S.A.',g:'PY',t:'-',m:Array(12).fill('')},
+    {c:'MELHOR ESTRATÉGIA, UNIPESSOAL LDA',g:'PY',t:'-',m:Array(12).fill('')},
+    {c:'FOREST BAY, UNIPESSOAL LDA',g:'BALLY',t:'-',m:Array(12).fill('')},
+    {c:'Sky Valet Portugal, Unipessoal, Lda',g:'SKY',t:'-',m:Array(12).fill('')},
+    {c:'Famataíde, Lda',g:'SKY',t:'-',m:Array(12).fill('')},
+    {c:'Associação de Futebol de Setúbal',g:'AFS',t:'-',m:Array(12).fill('')},
+    {c:'ASK Marginal',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'Ask, S.A.',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'Ask Patrimónios - Sociedade Gestora de Patrimónios S.A.',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'Ask IV - Mediação de Seguros, Lda',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'ISQ - Sociedade de Capital de Risco, S.A.',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'FAI - ITÁLIA',g:'N/A',t:'-',m:Array(12).fill('')},
     {c:'Subfundo 1',g:'ASK',t:'-',m:Array(12).fill('')},
-    {c:'PACE',g:'PY',t:'-',m:Array(12).fill('')},
-    {c:'Hipnose',g:'',t:'-',m:Array(12).fill('')},
-    {c:'SOC AGRICOLA DE FRUJAIS',g:'MIND',t:'-',m:Array(12).fill('')},
-    {c:'Mukojin',g:'',t:'-',m:Array(12).fill('')},
+    {c:'Subfundo 2',g:'ASK',t:'-',m:Array(12).fill('')},
+    {c:'Cryptovoice',g:'N/A',t:'-',m:Array(12).fill('')},
+    {c:'Sociedade Agrícola de Frujais',g:'MIND',t:'-',m:Array(12).fill('')},
+    {c:'Hipnose - Produções Artisticas, Lda.',g:'',t:'-',m:Array(12).fill('')},
   ],
   'Seg. Social Ind.': [{c:'Hipnose - Produções Artisticas Lda',g:'',t:'BTOC',m:Array(12).fill('')}],
   'COPE': [
@@ -1051,6 +1059,57 @@ function cfTipoBadge(t) {
   return `<span class="cf-badge b-outro">${t.length > 22 ? t.substring(0,22)+'…' : t}</span>`;
 }
 
+// Modelo 10: month dropdown options for "Check Retenções"
+const M10_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const M10_PESSOAS = ['ML','VCOS','TP','TF'];
+
+function cfM10CellHtml(val, field, idx) {
+  if (!val) return `<span class="cell-empty">·</span>`;
+  if (field === 'mes') return `<span class="cell-ok" style="font-size:11px">Validado a ${val}</span>`;
+  if (field === 'por') return `<span style="background:#f0f4ff;color:#6d4aff;border:1px solid #c4b5fd;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600;">Validado por ${val}</span>`;
+  return val;
+}
+
+function cfM10OpenDropdown(idx, field, tdEl) {
+  cfCloseDropdown();
+  const row = cfData['Modelo 10'][idx];
+  const cur = field === 'mes' ? (row.m10mes || '') : (row.m10por || '');
+  const options = field === 'mes'
+    ? [{ value: '', label: 'Limpar' }, ...M10_MESES.map(m => ({ value: m, label: m }))]
+    : [{ value: '', label: 'Limpar' }, ...M10_PESSOAS.map(p => ({ value: p, label: p }))];
+  // Use the actual clicked element rect (fixed positioning, viewport coords)
+  const rect = (event && event.target) ? event.target.closest('td').getBoundingClientRect() : tdEl.getBoundingClientRect();
+  const dd = document.createElement('div');
+  dd.className = 'cf-dropdown';
+  const hdr = document.createElement('div');
+  hdr.className = 'cf-dd-header';
+  hdr.textContent = field === 'mes' ? 'Check Retenções' : 'Validado por';
+  dd.appendChild(hdr);
+  options.forEach(opt => {
+    const item = document.createElement('div');
+    item.className = 'cf-dd-item' + (cur === opt.value ? ' selected' : '');
+    item.textContent = opt.label || '—';
+    item.onclick = (e) => {
+      e.stopPropagation();
+      if (field === 'mes') cfData['Modelo 10'][idx].m10mes = opt.value;
+      else cfData['Modelo 10'][idx].m10por = opt.value;
+      cfCloseDropdown();
+      cfRender();
+      cfScheduleSave();
+    };
+    dd.appendChild(item);
+  });
+  document.body.appendChild(dd);
+  cfOpenDropdown = dd;
+  const ddW = 160, ddH = options.length * 32 + 36;
+  let top = rect.bottom + 4, left = rect.left;
+  if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
+  if (top + ddH > window.innerHeight - 8) top = rect.top - ddH - 4;
+  // cf-dropdown is position:fixed so no scroll offset needed
+  dd.style.top = top + 'px'; dd.style.left = left + 'px';
+  setTimeout(() => document.addEventListener('click', cfOnDocClick), 0);
+}
+
 function cfRender() {
   cfRenderStats();
   const rows = cfGetFiltered();
@@ -1058,6 +1117,30 @@ function cfRender() {
   const miList = mf !== '' ? [+mf] : [0,1,2,3,4,5,6,7,8,9,10,11];
   const thead = document.querySelector('#cfTable thead');
   const tbody = document.querySelector('#cfTable tbody');
+  const isM10 = cfActiveSection === 'Modelo 10';
+
+  if (isM10) {
+    thead.innerHTML = `<tr>
+      <th style="min-width:180px">Cliente</th>
+      <th style="min-width:60px">Grupo</th>
+      <th style="min-width:130px;text-align:center;border-left:1px solid #ddd">Check Retenções</th>
+      <th style="min-width:120px;text-align:center;border-left:1px solid #ddd">Validado por</th>
+      <th style="min-width:50px"></th>
+    </tr>`;
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Sem resultados</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td style="max-width:200px;font-size:12px">${r.c}</td>
+      <td><span class="group-tag">${r.g || '—'}</span></td>
+      <td class="cell-edit" style="text-align:center;border-left:1px solid #ddd" onclick="cfM10OpenDropdown(${r._idx},'mes',this)">${cfM10CellHtml(r.m10mes,'mes',r._idx)}</td>
+      <td class="cell-edit" style="text-align:center;border-left:1px solid #ddd" onclick="cfM10OpenDropdown(${r._idx},'por',this)">${cfM10CellHtml(r.m10por,'por',r._idx)}</td>
+      <td><button class="cf-btn cf-btn-sm" onclick="cfEditEntry(${r._idx})">✎</button></td>
+    </tr>`).join('');
+    return;
+  }
+
   thead.innerHTML = `<tr>
     <th style="min-width:180px">Cliente</th>
     <th style="min-width:60px">Grupo</th>
@@ -1078,14 +1161,12 @@ function cfRender() {
       if (!isTrimestral) {
         return miList.map(mi => `<td class="cell-edit" onclick="cfEditCell(${r._idx},${mi},this)">${cfCellHtml(r.m[mi])}</td>`).join('');
       }
-      // For trimestral: merge every 3 months into one cell
       let cells = '';
       let i = 0;
       while (i < miList.length) {
         const mi = miList[i];
         const trimStart = Math.floor(mi / 3) * 3;
         const trimEnd = trimStart + 2;
-        // Count how many months of this trimester are visible
         let span = 0;
         let j = i;
         while (j < miList.length && miList[j] <= trimEnd) { span++; j++; }
@@ -1108,11 +1189,20 @@ function cfOnDocClick(e) { if (cfOpenDropdown && !cfOpenDropdown.contains(e.targ
 
 const CF_DD_OPTIONS = [
   { value: '', label: 'Limpar', color: 'var(--border2)' },
-  { value: 'Podem avançar', label: 'Podem avançar', color: '#f97316' },
-  { value: 'Submetido, falta enviar DOC', label: 'Submetido, falta enviar DOC', color: 'var(--cf-green)' },
-  { value: 'Falta validação', label: 'Falta validação', color: '#eab308' },
+  { value: 'Submetido', label: 'Submetido', color: 'var(--cf-green)' },
+  { value: 'Inexistência', label: 'Inexistência', color: 'var(--cf-yellow)' },
   { value: 'N/A', label: 'N/A', color: 'var(--cf-gray)' },
+  { value: 'Falta verificação', label: 'Falta verificação', color: 'var(--cf-red)' },
+];
+
+const CF_DD_OPTIONS_IVA = [
+  { value: '', label: 'Limpar', color: 'var(--border2)' },
+  { value: 'N/A', label: 'N/A', color: 'var(--cf-gray)' },
+  { value: 'Podem avançar', label: 'Podem avançar', color: '#f97316' },
+  { value: 'Falta validação', label: 'Falta validação', color: '#eab308' },
   { value: 'enviado email', label: 'enviado email', color: '#3b82f6' },
+  { value: 'Submetido, falta enviar DOC', label: 'Submetido, falta enviar DOC', color: '#4ade80' },
+  { value: 'Submetido', label: 'Submetido', color: 'var(--cf-green)' },
 ];
 
 const CF_DD_OPTIONS_MODELO10 = [
@@ -1145,7 +1235,7 @@ function cfEditCell(idx, mi, tdEl) {
     ? affectedMonths.map(m => CF_MESES_FULL[m]).join(' · ')
     : CF_MESES_FULL[mi];
   dd.appendChild(hdr);
-  const opts = cfActiveSection === 'Modelo 10' ? CF_DD_OPTIONS_MODELO10 : CF_DD_OPTIONS;
+  const opts = cfActiveSection === 'Modelo 10' ? CF_DD_OPTIONS_MODELO10 : cfActiveSection === 'IVA Declaração' ? CF_DD_OPTIONS_IVA : CF_DD_OPTIONS;
   opts.forEach(opt => {
     const item = document.createElement('div');
     item.className = 'cf-dd-item' + (cur === opt.value ? ' selected' : '');
