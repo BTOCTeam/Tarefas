@@ -2442,6 +2442,35 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
     }
   });
 
+  // Sync task status to Report
+  function rpSyncStatus(task, newStatus) {
+    if (!task?.fromReport || typeof rpData === 'undefined') return;
+    // Map task status to Report status
+    const statusMap = {
+      'Feito': 'VALIDADO',
+      'Em Progresso': 'EM CURSO',
+      '': '',
+      'VALIDADO': 'VALIDADO',
+      'EM CURSO': 'EM CURSO',
+      'ENVIADO REPORT': 'ENVIADO REPORT',
+      'FALTA FAZER FECHO': 'FALTA FAZER FECHO',
+      'faltam documentos/inf por parte cliente': 'faltam documentos/inf por parte cliente',
+      'LANÇADO': 'LANÇADO',
+      'FALTA VALIDAR': 'FALTA VALIDAR',
+    };
+    const rpStatus = statusMap[newStatus] ?? newStatus;
+    // Find matching row in rpData by client name
+    const rpRow = rpData.find(r => r.c === task.client || task.client?.includes(r.c) || r.c?.includes(task.client));
+    if (!rpRow) return;
+    // Find which month index from atribMes
+    const mesIdx = typeof RP_MESES_FULL !== 'undefined' ? RP_MESES_FULL.indexOf(task.atribMes || '') : -1;
+    if (mesIdx >= 0) {
+      rpRow.m[mesIdx] = rpStatus;
+    }
+    rpScheduleSave();
+    if (typeof rpRender === 'function') rpRender();
+  }
+
   // Report portal click handler
   reportPortal.addEventListener('click', async e => {
     e.stopPropagation();
@@ -2475,8 +2504,9 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
     if (!id) return;
     try {
       await updateDoc(doc(db, 'tarefas', id), { status, updatedAt: serverTimestamp() });
+      const task = allTasks.find(t => t.id === id);
+      rpSyncStatus(task, status);
       if (status === 'Feito') {
-        const task = allTasks.find(t => t.id === id);
         if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee, task.deadline, task.notes);
         showToast('Tarefa concluída! Movida para Arquivo ✅');
       } else {
