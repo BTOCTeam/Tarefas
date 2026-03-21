@@ -2395,7 +2395,9 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
         <td style="text-align:center">
           ${currentTab === 'archive'
             ? `<span class="status-btn done">${meta.label}</span>`
-            : `<button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button>`
+            : t.fromReport
+              ? `<button class="status-btn pending" data-action="togglestatus" data-id="${t.id}" style="background:rgba(109,74,255,0.1);color:#6d4aff;border-color:#6d4aff55;font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(t.status || 'Pendente')}">${esc(t.status || 'Pendente')} ${chevron}</button>`
+              : `<button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button>`
           }
         </td>
         <td style="text-align:center">${actionsHTML}</td>
