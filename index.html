@@ -268,6 +268,9 @@ td { padding: 0.9rem 1.2rem; font-size: 0.9rem; vertical-align: middle; color: v
 /* Overdue row highlight */
 tbody tr.row-overdue { background: color-mix(in srgb, var(--red) 4%, transparent); }
 tbody tr.row-overdue:hover { background: color-mix(in srgb, var(--red) 8%, transparent); }
+tbody tr.row-report { background: rgba(109,74,255,0.06); }
+tbody tr.row-report td:first-child { border-left: 3px solid #6d4aff; }
+tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
 
 .status-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.6rem 0.22rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; font-family: inherit; user-select: none; }
 .status-btn:hover { filter: brightness(0.92); }
@@ -2149,6 +2152,7 @@ async function rpSaveAtrib() {
         status: '',
         notes: '',
         createdBy: criadoPor,
+        fromReport: true,
         createdAt: fs.serverTimestamp(),
         updatedAt: fs.serverTimestamp()
       });
@@ -2350,7 +2354,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
       // Row class: overdue highlight
       const isOverdue = !isDone && t.deadline && new Date(t.deadline+'T00:00:00') < today;
-      const rowCls = isOverdue ? 'row-overdue' : (isDone ? 'task-done' : '');
+      const rowCls = isOverdue ? 'row-overdue' : (isDone ? 'task-done' : (t.fromReport ? 'row-report' : ''));
 
       const actionsHTML = currentTab === 'archive'
         ? `<div class="actions">
