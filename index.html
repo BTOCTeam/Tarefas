@@ -2164,6 +2164,7 @@ async function rpSaveAtrib() {
         notes: '',
         createdBy: criadoPor,
         fromReport: true,
+        atribMes: mes,
         createdAt: fs.serverTimestamp(),
         updatedAt: fs.serverTimestamp()
       });
@@ -2444,31 +2445,30 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
   // Sync task status to Report
   function rpSyncStatus(task, newStatus) {
-    if (!task?.fromReport || typeof rpData === 'undefined') return;
-    // Map task status to Report status
+    if (!task?.fromReport) return;
+    if (typeof rpData === 'undefined' || !Array.isArray(rpData)) return;
     const statusMap = {
-      'Feito': 'VALIDADO',
-      'Em Progresso': 'EM CURSO',
-      '': '',
-      'VALIDADO': 'VALIDADO',
-      'EM CURSO': 'EM CURSO',
-      'ENVIADO REPORT': 'ENVIADO REPORT',
+      'Feito': 'VALIDADO', 'Em Progresso': 'EM CURSO', '': '',
+      'VALIDADO': 'VALIDADO', 'EM CURSO': 'EM CURSO', 'ENVIADO REPORT': 'ENVIADO REPORT',
       'FALTA FAZER FECHO': 'FALTA FAZER FECHO',
       'faltam documentos/inf por parte cliente': 'faltam documentos/inf por parte cliente',
-      'LANÇADO': 'LANÇADO',
-      'FALTA VALIDAR': 'FALTA VALIDAR',
+      'LANÇADO': 'LANÇADO', 'FALTA VALIDAR': 'FALTA VALIDAR',
     };
-    const rpStatus = statusMap[newStatus] ?? newStatus;
-    // Find matching row in rpData by client name
-    const rpRow = rpData.find(r => r.c === task.client || task.client?.includes(r.c) || r.c?.includes(task.client));
-    if (!rpRow) return;
-    // Find which month index from atribMes
-    const mesIdx = typeof RP_MESES_FULL !== 'undefined' ? RP_MESES_FULL.indexOf(task.atribMes || '') : -1;
-    if (mesIdx >= 0) {
+    const rpStatus = statusMap.hasOwnProperty(newStatus) ? statusMap[newStatus] : newStatus;
+    // Find matching row - flexible match
+    const rpRow = rpData.find(r =>
+      r.c === task.client ||
+      (task.client && r.c && task.client.toLowerCase().includes(r.c.toLowerCase())) ||
+      (task.client && r.c && r.c.toLowerCase().includes(task.client.toLowerCase()))
+    );
+    if (!rpRow) { console.warn('rpSyncStatus: no match for client', task.client); return; }
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const mesIdx = meses.indexOf(task.atribMes || '');
+    if (mesIdx >= 0 && rpStatus) {
       rpRow.m[mesIdx] = rpStatus;
+      rpScheduleSave();
+      if (typeof rpRender === 'function') rpRender();
     }
-    rpScheduleSave();
-    if (typeof rpRender === 'function') rpRender();
   }
 
   // Report portal click handler
