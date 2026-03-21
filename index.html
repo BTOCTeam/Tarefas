@@ -783,6 +783,17 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
   <div class="status-option" data-status="Em Progresso"><span class="dot dot-progress"></span>Em Progresso</div>
   <div class="status-option" data-status="Feito"><span class="dot dot-done"></span>Feito</div>
 </div>
+<div id="status-portal-report" style="position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:200px;overflow:hidden;display:none;padding:6px 0;">
+  <div style="padding:6px 14px 4px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Estado Report</div>
+  <div class="rp-status-opt" data-status="" style="padding:7px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--muted)">— Limpar</span></div>
+  <div class="rp-status-opt" data-status="VALIDADO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-validado">VALIDADO</span></div>
+  <div class="rp-status-opt" data-status="EM CURSO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-em-curso">EM CURSO</span></div>
+  <div class="rp-status-opt" data-status="ENVIADO REPORT" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-enviado">ENVIADO REPORT</span></div>
+  <div class="rp-status-opt" data-status="FALTA FAZER FECHO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-fecho">FALTA FAZER FECHO</span></div>
+  <div class="rp-status-opt" data-status="faltam documentos/inf por parte cliente" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-doc">faltam documentos/inf</span></div>
+  <div class="rp-status-opt" data-status="LANÇADO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-lancado">LANÇADO</span></div>
+  <div class="rp-status-opt" data-status="FALTA VALIDAR" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-validar">FALTA VALIDAR</span></div>
+</div>
 
 <div class="overlay" id="overlay">
   <div class="modal" id="modal">
@@ -2394,19 +2405,56 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
   // Status portal
   const portal = document.getElementById('status-portal');
+  const reportPortal = document.getElementById('status-portal-report');
+
   function openPortal(taskId, anchor) {
     activeStatusId = taskId;
-    const cur = allTasks.find(t => t.id === taskId)?.status || '';
-    portal.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === cur));
+    const task = allTasks.find(t => t.id === taskId);
+    const isReport = task?.fromReport;
+    const cur = task?.status || '';
+    closePortal();
+    const activePortal = isReport ? reportPortal : portal;
+    if (!isReport) portal.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === cur));
     const r = anchor.getBoundingClientRect();
-    portal.style.left = r.left + 'px';
-    portal.style.minWidth = Math.max(r.width, 160) + 'px';
+    activePortal.style.left = r.left + 'px';
+    activePortal.style.minWidth = Math.max(r.width, 160) + 'px';
     const below = window.innerHeight - r.bottom;
-    if (below >= 130) { portal.style.top = (r.bottom + 6) + 'px'; portal.style.bottom = 'auto'; }
-    else { portal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; portal.style.top = 'auto'; }
-    portal.classList.add('open');
+    if (below >= 130) { activePortal.style.top = (r.bottom + 6) + 'px'; activePortal.style.bottom = 'auto'; }
+    else { activePortal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; activePortal.style.top = 'auto'; }
+    activePortal.style.display = 'block';
   }
-  function closePortal() { portal.classList.remove('open'); activeStatusId = null; }
+  function closePortal() {
+    portal.classList.remove('open');
+    reportPortal.style.display = 'none';
+    activeStatusId = null;
+  }
+
+  // Report portal click handler
+  reportPortal.addEventListener('click', async e => {
+    const opt = e.target.closest('.rp-status-opt');
+    if (!opt) return;
+    const id = activeStatusId;
+    const status = opt.dataset.status;
+    closePortal();
+    if (!id) return;
+    try {
+      const finalStatus = status === 'VALIDADO' ? 'Feito' : status;
+      await updateDoc(doc(db, 'tarefas', id), { status: finalStatus, updatedAt: serverTimestamp() });
+      if (status === 'VALIDADO') {
+        const task = allTasks.find(t => t.id === id);
+        if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee, task.deadline, task.notes);
+        showToast('Tarefa validada e arquivada ✅');
+      } else {
+        showToast('Status atualizado!');
+      }
+    } catch { showToast('Erro ao atualizar.'); }
+  });
+
+  document.addEventListener('click', e => {
+    if (!reportPortal.contains(e.target) && !e.target.closest('[data-action="togglestatus"]')) {
+      reportPortal.style.display = 'none';
+    }
+  });
 
   portal.addEventListener('click', async e => {
     const opt = e.target.closest('.status-option');
