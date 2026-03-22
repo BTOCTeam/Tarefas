@@ -2072,6 +2072,7 @@ function rpMesDDOutside(e) {
 
 function rpMesAllToggle(cb) {
   document.querySelectorAll('.rpMesCb').forEach(c => c.checked = cb.checked);
+  localStorage.setItem('btoc-rp-meses', cb.checked ? 'null' : '[]');
   rpUpdateMesLabel();
   rpRender();
 }
@@ -2080,6 +2081,9 @@ function rpMesChanged() {
   const cbs = document.querySelectorAll('.rpMesCb');
   const checked = document.querySelectorAll('.rpMesCb:checked');
   document.getElementById('rpMesAll').checked = checked.length === cbs.length;
+  // Save selection to localStorage
+  const selected = Array.from(checked).map(c => +c.value);
+  localStorage.setItem('btoc-rp-meses', JSON.stringify(selected.length === 12 ? null : selected));
   rpUpdateMesLabel();
   rpRender();
 }
@@ -2133,15 +2137,22 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     }
   });
 });
-// Init checkbox list
+// Init checkbox list, restore saved selection
 (function() {
   const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const saved = localStorage.getItem('btoc-rp-meses');
+  const savedArr = saved ? JSON.parse(saved) : null;
   const list = document.getElementById('rpMesCbList');
-  list.innerHTML = meses.map((m,i) =>
-    '<label style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;">' +
-    '<input type="checkbox" class="rpMesCb" value="' + i + '" checked onchange="rpMesChanged()"> ' + m +
-    '</label>'
-  ).join('');
+  list.innerHTML = meses.map((m,i) => {
+    const isChecked = savedArr ? savedArr.includes(i) : true;
+    return '<label style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;">' +
+      '<input type="checkbox" class="rpMesCb" value="' + i + '"' + (isChecked ? ' checked' : '') + ' onchange="rpMesChanged()"> ' + m +
+      '</label>';
+  }).join('');
+  // Sync "Todos" checkbox
+  const checkedCount = savedArr ? savedArr.length : 12;
+  document.getElementById('rpMesAll').checked = checkedCount === 12;
+  rpUpdateMesLabel();
 })();
 // Init render (empty)
 rpRender();
