@@ -1994,7 +1994,7 @@ async function rpLoadFromFirebase() {
       // Merge: keep client list from RP_CLIENTES, fill values from Firebase
       rpData = RP_CLIENTES.map(r => {
         const saved = loaded.find(s => s.c === r.c);
-        return saved ? {...r, m: saved.m || Array(12).fill(''), obs: saved.obs || '', atrib: saved.atrib || '', atribMes: saved.atribMes || '', atribCriadoPor: saved.atribCriadoPor || ''} : {...r, m: Array(12).fill(''), obs: '', atrib: '', atribMes: '', atribCriadoPor: ''};
+        return saved ? {...r, m: saved.m || Array(12).fill(''), obs: saved.obs || '', atrib: saved.atrib || '', atribMes: saved.atribMes || '', atribCriadoPor: saved.atribCriadoPor || '', cellData: saved.cellData || {}} : {...r, m: Array(12).fill(''), obs: '', atrib: '', atribMes: '', atribCriadoPor: '', cellData: {}};
       });
     } else {
       await rpSaveToFirebase();
