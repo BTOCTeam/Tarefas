@@ -801,6 +801,23 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
     </div>
   </div>
 
+  <!-- Report Sync Modal (shown when task marked Feito) -->
+  <div id="rpSyncOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10001;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border-radius:16px;padding:28px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+      <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;color:var(--text)">Atualizar Report</h3>
+      <p style="margin:0 0 18px;font-size:12px;color:var(--muted)" id="rpSyncSubtitle"></p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <div class="rp-sync-opt" data-val="VALIDADO" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#d1fae5;color:#065f46;font-weight:700;font-size:13px;">VALIDADO</div>
+        <div class="rp-sync-opt" data-val="LANÇADO, FALTA VALIDAR" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#fef9c3;color:#854d0e;font-weight:700;font-size:13px;">LANÇADO, FALTA VALIDAR</div>
+        <div class="rp-sync-opt" data-val="faltam documentos/inf por parte cliente" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#ffedd5;color:#c2410c;font-weight:700;font-size:13px;">faltam documentos/inf por parte cliente</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="rpSyncClose()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;">Não alterar</button>
+        <button onclick="rpSyncSave()" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Obs Modal -->
   <div id="rpObsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;">
     <div style="background:var(--surface);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -2212,6 +2229,44 @@ document.getElementById('rpAtribOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('rpAtribOverlay')) rpCloseAtrib();
 });
 
+// Report Sync Modal
+let rpSyncTask = null, rpSyncVal = null;
+function rpSyncShow(task) {
+  rpSyncTask = task;
+  rpSyncVal = null;
+  document.getElementById('rpSyncSubtitle').textContent = (task?.client || '') + (task?.atribMes ? ' · ' + task.atribMes : '');
+  document.querySelectorAll('.rp-sync-opt').forEach(o => o.style.outline = 'none');
+  document.getElementById('rpSyncOverlay').style.display = 'flex';
+}
+function rpSyncClose() {
+  document.getElementById('rpSyncOverlay').style.display = 'none';
+  rpSyncTask = null; rpSyncVal = null;
+}
+function rpSyncSave() {
+  if (!rpSyncTask || !rpSyncVal) { rpSyncClose(); return; }
+  const rpRow = rpData.find(r =>
+    r.c === rpSyncTask.client ||
+    (rpSyncTask.client && r.c && rpSyncTask.client.toLowerCase().includes(r.c.toLowerCase())) ||
+    (rpSyncTask.client && r.c && r.c.toLowerCase().includes(rpSyncTask.client.toLowerCase()))
+  );
+  if (rpRow) {
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const mesIdx = meses.indexOf(rpSyncTask.atribMes || '');
+    if (mesIdx >= 0) { rpRow.m[mesIdx] = rpSyncVal; rpScheduleSave(); rpRender(); }
+  }
+  rpSyncClose();
+}
+document.getElementById('rpSyncOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('rpSyncOverlay')) rpSyncClose();
+});
+document.querySelectorAll('.rp-sync-opt').forEach(o => {
+  o.addEventListener('click', () => {
+    rpSyncVal = o.dataset.val;
+    document.querySelectorAll('.rp-sync-opt').forEach(x => x.style.outline = 'none');
+    o.style.outline = '2px solid var(--accent)';
+  });
+});
+
 let rpCellIdx = null, rpCellMi = null, rpCellVal = null;
 
 function rpOpenCellModal(idx, mi) {
@@ -2557,6 +2612,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
       if (status === 'Feito') {
         if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee, task.deadline, task.notes);
         showToast('Tarefa concluída! Movida para Arquivo ✅');
+        if (task?.fromReport && typeof window.rpSyncShowFromModule === 'function') window.rpSyncShowFromModule(task);
       } else {
         showToast('Status atualizado!');
       }
@@ -2704,6 +2760,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
   window.showToast = function(msg) { showToast(msg); };
   window.sendEmail = async (name, task, client, deadline, notes) => sendEmail(name, task, client, deadline, notes);
+  window.rpSyncShowFromModule = (task) => { if (typeof rpSyncShow === 'function') rpSyncShow(task); };
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
