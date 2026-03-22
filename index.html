@@ -632,17 +632,18 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
     </select>
     <span id="cfYearStatus" style="font-size:11px;color:var(--muted);margin-left:4px;"></span>
   </div>
-  <div style="max-width:1600px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;">
-    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Resumo</span>
-    <select id="cfStatMonth" onchange="cfRenderStats()" style="font-size:11px;padding:3px 8px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;font-weight:600;">
-      <option value="">Ano todo</option>
-      <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
-      <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
-      <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
-      <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
-    </select>
+  <div class="cf-stats" id="cfStats">
+    <div class="cf-stat" style="cursor:default;">
+      <div class="cf-stat-label">Mês</div>
+      <select id="cfStatMonth" onchange="cfRenderStats()" style="font-size:18px;font-weight:700;color:var(--accent);background:transparent;border:none;outline:none;cursor:pointer;font-family:inherit;width:100%;margin-top:4px;">
+        <option value="">Ano todo</option>
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
+        <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
+        <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
+    </div>
   </div>
-  <div class="cf-stats" id="cfStats"></div>
   <div class="cf-sections" id="cfSections"></div>
   <div class="cf-section-info" id="cfSectionInfo"></div>
   <div class="cf-controls">
@@ -1256,11 +1257,16 @@ function cfRenderStats() {
   const { sub, pend, inex } = cfCalcStats(miList);
   const mesLabel = sm !== '' ? CF_MESES_FULL[+sm] : null;
 
-  document.getElementById('cfStats').innerHTML =
-    '<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">' + total + '</div></div>' +
-    '<div class="cf-stat"><div class="cf-stat-label">Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val green">' + sub + '</div></div>' +
-    '<div class="cf-stat"><div class="cf-stat-label">Por entregar' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val red">' + pend + '</div></div>' +
-    '<div class="cf-stat"><div class="cf-stat-label">Inexistência' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val yellow">' + inex + '</div></div>';
+  // Keep the month card, update the rest
+  const statsDiv = document.getElementById('cfStats');
+  // Remove old stat cards (keep only the month card which is first)
+  while (statsDiv.children.length > 1) statsDiv.removeChild(statsDiv.lastChild);
+  const cards = [
+    '<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">' + total + '</div></div>',
+    '<div class="cf-stat"><div class="cf-stat-label">Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val green">' + sub + '</div></div>',
+    '<div class="cf-stat"><div class="cf-stat-label">Por entregar' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val red">' + pend + '</div></div>',
+  ];
+  statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
 
   document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
 }
