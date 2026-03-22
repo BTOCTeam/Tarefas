@@ -593,7 +593,7 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
   <select class="filter-select" id="filterStatus">
     <option value="all">📋 Todos os status</option>
     <option value="">Pendente</option>
-    <option value="Em Progresso">Em Progresso</option>
+    <option value="Em Curso">Em Curso</option>
     <option value="Feito">Feito</option>
   </select>
   <button class="btn btn-primary" id="btnNovaTarefa">
@@ -820,7 +820,7 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
 ══════════════════════════════════ -->
 <div id="status-portal">
   <div class="status-option" data-status=""><span class="dot dot-pending"></span>Pendente</div>
-  <div class="status-option" data-status="Em Progresso"><span class="dot dot-progress"></span>Em Progresso</div>
+  <div class="status-option" data-status="Em Curso"><span class="dot dot-progress"></span>Em Curso</div>
   <div class="status-option" data-status="Feito"><span class="dot dot-done"></span>Feito</div>
 </div>
 
@@ -2382,7 +2382,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
   const STATUS_META = {
     '':             { label: 'Pendente',     cls: 'pending'  },
-    'Em Progresso': { label: 'Em Progresso', cls: 'progress' },
+    'Em Curso':     { label: 'Em Curso',     cls: 'progress' },
     'Feito':        { label: 'Feito',        cls: 'done'     },
   };
   const chevron = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
@@ -2518,7 +2518,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
     if (!task?.fromReport) return;
     if (typeof rpData === 'undefined' || !Array.isArray(rpData)) return;
     const statusMap = {
-      'Feito': 'VALIDADO', 'Em Progresso': 'EM CURSO', '': '',
+      'Feito': 'VALIDADO', 'Em Curso': 'EM CURSO', '': '',
       'VALIDADO': 'VALIDADO', 'EM CURSO': 'EM CURSO', 'ENVIADO REPORT': 'ENVIADO REPORT',
       'FALTA FAZER FECHO': 'FALTA FAZER FECHO',
       'faltam documentos/inf por parte cliente': 'faltam documentos/inf por parte cliente',
