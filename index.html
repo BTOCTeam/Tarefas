@@ -2266,7 +2266,7 @@ function rpOpenCellModal(idx, mi) {
   rpCellIdx = idx; rpCellMi = mi;
   const r = rpData[idx];
   const cellData = r.cellData?.[mi] || {};
-  rpCellVal = r.m[mi] || '';
+  rpCellVal = null; // null = no change, '' = clear
   document.getElementById('rpCellTitle').textContent = RP_MESES_FULL[mi];
   document.getElementById('rpCellSubtitle').textContent = r.c;
   document.getElementById('rpCellPessoa').value = cellData.pessoa || '';
@@ -2288,12 +2288,14 @@ async function rpSaveCellModal() {
   const idx = rpCellIdx, mi = rpCellMi;
   const pessoa = document.getElementById('rpCellPessoa').value;
   const criadoPor = document.getElementById('rpCellCriadoPor').value;
-  rpData[idx].m[mi] = rpCellVal;
+  // If no option was clicked, keep existing value; rpCellVal='' means Limpar was clicked
+  if (rpCellVal !== null) rpData[idx].m[mi] = rpCellVal;
   if (!rpData[idx].cellData) rpData[idx].cellData = {};
   rpData[idx].cellData[mi] = { pessoa, criadoPor };
   rpCloseCellModal();
   rpRender();
-  rpScheduleSave();
+  // Save immediately (no delay) to ensure empty values are persisted
+  await rpSaveToFirebase();
   // Create task if pessoa set and val is not empty
   if (pessoa && rpCellVal) {
     try {
