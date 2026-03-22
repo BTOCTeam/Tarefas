@@ -983,7 +983,7 @@ const CF_ESTADOS = ['','Submetido','Entregue','Inexistência','Falta validação
 const CF_SECTIONS_META = {
   'IVA Declaração': 'Declaração periódica de IVA — clientes com obrigação de entrega mensal ou trimestral.',
   'IVA IN': 'IVA de clientes IN — entidades com obrigação de entrega de IVA (clientes internos).',
-  'Dec. Recapitulativa': 'Declaração Recapitulativa de IVA — obrigações de entrega mensal ou trimestral.',
+  'Dec. Recapitulativa IVA': 'Declaração Recapitulativa de IVA — obrigações de entrega mensal ou trimestral.',
   'Retenções / DMIS': 'Retenções na Fonte e DMIS — controlo mensal de submissão.',
   'SAFT Vendas': 'SAFT Vendas — até dia 5 de cada mês.',
   'Modelo 10': 'Modelo 10 — declaração anual de rendimentos. Validação e submissão AT.',
@@ -1051,7 +1051,7 @@ const cfRawData = {
     {c:'Crónica Numérica',g:'',t:'Trimestral',m:Array(12).fill('')},
     {c:'VRP',g:'',t:'Trimestral',m:Array(12).fill('')},
   ],
-  'Dec. Recapitulativa': [
+  'Dec. Recapitulativa IVA': [
     {c:'NUMERO UM - REPARAÇAO AUTOMOVEL, SA (MIDAS)',g:'ESTORIL',t:'Mensal',m:Array(12).fill('')},
     {c:'BOTAO AZUL - COMERCIO DE VESTUÁRIO, SA (MR.BLUE)',g:'ESTORIL',t:'Mensal',m:Array(12).fill('')},
     {c:'AFTERHOUSE S.A.',g:'ESTORIL',t:'Trimestral',m:Array(12).fill('')},
@@ -1270,6 +1270,7 @@ function cfCellHtml(v) {
   if (vl === 'enviado email') return `<span style="background:#eff6ff;color:#3b82f6;border:1px solid #bfdbfe;border-radius:4px;padding:1px 6px;font-size:10px;display:inline-block;white-space:nowrap;font-weight:500;">${v}</span>`;
   if (vl.includes('sem dados') || vl.includes('falta')) return `<span class="cell-falta">${v}</span>`;
   if (vl.includes('inexist')) return `<span class="cell-outro">Inexist.</span>`;
+  if (vl === 'não tem') return `<span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;border-radius:4px;padding:1px 6px;font-size:10px;display:inline-block;font-weight:500;">Não tem</span>`;
   if (v === '-' || vl.includes('n/a') || vl.includes('não aplicável')) return `<span class="cell-na">—</span>`;
   if (vl.includes('aplicável')) return `<span class="cell-ok">${v}</span>`;
   return `<span style="font-size:10px;color:var(--muted)">${v}</span>`;
@@ -1417,6 +1418,14 @@ const CF_DD_OPTIONS = [
   { value: 'Falta verificação', label: 'Falta verificação', color: 'var(--cf-red)' },
 ];
 
+const CF_DD_OPTIONS_DEC_RECAP = [
+  { value: '', label: 'Limpar', color: 'var(--border2)' },
+  { value: 'Submetido', label: 'Submetido', color: 'var(--cf-green)' },
+  { value: 'Não tem', label: 'Não tem', color: 'var(--cf-yellow)' },
+  { value: 'N/A', label: 'N/A', color: 'var(--cf-gray)' },
+  { value: 'Falta verificação', label: 'Falta verificação', color: 'var(--cf-red)' },
+];
+
 const CF_DD_OPTIONS_IVA = [
   { value: '', label: 'Limpar', color: 'var(--border2)' },
   { value: 'N/A', label: 'N/A', color: 'var(--cf-gray)' },
@@ -1473,7 +1482,7 @@ function cfEditCell(idx, mi, tdEl) {
     ? affectedMonths.map(m => CF_MESES_FULL[m]).join(' · ')
     : CF_MESES_FULL[mi];
   dd.appendChild(hdr);
-  const opts = cfActiveSection === 'Modelo 10' ? CF_DD_OPTIONS_MODELO10 : cfActiveSection === 'IVA Declaração' ? CF_DD_OPTIONS_IVA : CF_DD_OPTIONS;
+  const opts = cfActiveSection === 'Modelo 10' ? CF_DD_OPTIONS_MODELO10 : cfActiveSection === 'IVA Declaração' ? CF_DD_OPTIONS_IVA : cfActiveSection === 'Dec. Recapitulativa IVA' ? CF_DD_OPTIONS_DEC_RECAP : CF_DD_OPTIONS;
   opts.forEach(opt => {
     const item = document.createElement('div');
     item.className = 'cf-dd-item' + (cur === opt.value ? ' selected' : '');
@@ -1629,7 +1638,7 @@ const cfRawData2025 = {
     {c:'Crónica numérica',g:'',t:'Trimestral',m:["N/A", "N/A", "Submetido", "N/A", "N/A", "Submetido", "N/A", "N/A", "Submetido", "N/A", "N/A", ""]},
     {c:'VRP',g:'',t:'Trimestral',m:["N/A", "N/A", "Submetido", "N/A", "N/A", "Submetido", "N/A", "N/A", "Submetido", "N/A", "N/A", ""]},
   ],
-  'Dec. Recapitulativa': [
+  'Dec. Recapitulativa IVA': [
     {c:'NUMERO UM - REPARAÇAO AUTOMOVEL, SA (MIDAS)',g:'ESTORIL',t:'Mensal',m:["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "Submetido", "", "", "Submetido", "", ""]},
     {c:'BOTAO AZUL - COMERCIO DE VESTUÁRIO, SA (MR.BLUE)',g:'ESTORIL',t:'Mensal',m:["N/A", "Submetido", "Submetido", "", "", "", "Submetido", "Submetido", "Submetido", "Submetido", "", "Submetido"]},
     {c:'AFTERHOUSE S.A.',g:'ESTORIL',t:'Trimestral',m:["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "", "", "", ""]},
