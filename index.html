@@ -1232,13 +1232,17 @@ function cfGetStatMonth() {
 function cfCalcStats(miList) {
   const rows = cfData[cfActiveSection];
   let sub = 0, pend = 0, inex = 0;
+  // Last month of each trimester: 2=Mar, 5=Jun, 8=Sep, 11=Dec
+  const trimesterEnd = [2, 5, 8, 11];
   rows.forEach(r => {
+    const isTrimestral = r.t && r.t.toLowerCase().includes('trimestral');
     miList.forEach(mi => {
+      // For trimestral rows, only count the last month of each trimester
+      if (isTrimestral && !trimesterEnd.includes(mi)) return;
       const v = r.m[mi];
       const vl = (v || '').toLowerCase();
-      if (v === 'Submetido' || v === 'Entregue' || v === 'GOFF' || vl.includes('aplicável')) sub++;
+      if (v === 'Submetido' || v === 'Entregue' || v === 'GOFF' || vl.includes('aplicável') || vl.startsWith('validado') || vl.includes('falta enviar doc') || vl.includes('inexist') || vl === 'não tem') sub++;
       else if (!v || v === '') pend++;
-      else if (vl.includes('inexist')) inex++;
     });
   });
   return { sub, pend, inex };
