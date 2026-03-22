@@ -761,6 +761,46 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
     </div>
   </div>
 
+  <!-- Cell Modal -->
+  <div id="rpCellOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border-radius:16px;padding:28px;width:400px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+      <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;color:var(--text)" id="rpCellTitle">Estado</h3>
+      <p style="margin:0 0 20px;font-size:12px;color:var(--muted)" id="rpCellSubtitle"></p>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:8px;">Estado</label>
+        <div id="rpCellOptions" style="display:flex;flex-direction:column;gap:6px;">
+          <div class="rp-cell-opt" data-val="" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:12px;color:var(--muted);">— Limpar</div>
+          <div class="rp-cell-opt" data-val="VALIDADO" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#d1fae5;color:#065f46;font-weight:700;font-size:12px;">VALIDADO</div>
+          <div class="rp-cell-opt" data-val="LANÇADO, FALTA VALIDAR" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#fef9c3;color:#854d0e;font-weight:700;font-size:12px;">LANÇADO, FALTA VALIDAR</div>
+          <div class="rp-cell-opt" data-val="faltam documentos/inf por parte cliente" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#ffedd5;color:#c2410c;font-weight:700;font-size:12px;">faltam documentos/inf por parte cliente</div>
+          <div class="rp-cell-opt" data-val="FALTA FAZER FECHO" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#fee2e2;color:#b91c1c;font-weight:700;font-size:12px;">FALTA FAZER FECHO</div>
+          <div class="rp-cell-opt" data-val="ENVIADO REPORT" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#ede9fe;color:#6d28d9;font-weight:700;font-size:12px;">ENVIADO REPORT</div>
+          <div class="rp-cell-opt" data-val="EM CURSO" style="padding:8px 14px;border-radius:8px;cursor:pointer;background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:12px;">EM CURSO</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;">
+          <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:6px;">Responsável</label>
+          <select id="rpCellPessoa" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px;outline:none;cursor:pointer;">
+            <option value="">— Nenhum —</option>
+            <option>Tiago Fachada</option><option>Tiago Pereira</option><option>Miguel Leitão</option><option>Vânia Costa</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:6px;">Criado por</label>
+          <select id="rpCellCriadoPor" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px;outline:none;cursor:pointer;">
+            <option value="">— Nenhum —</option>
+            <option>Tiago Fachada</option><option>Tiago Pereira</option><option>Miguel Leitão</option><option>Vânia Costa</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="rpCloseCellModal()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;">Cancelar</button>
+        <button onclick="rpSaveCellModal()" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Obs Modal -->
   <div id="rpObsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;">
     <div style="background:var(--surface);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -782,17 +822,6 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
   <div class="status-option" data-status=""><span class="dot dot-pending"></span>Pendente</div>
   <div class="status-option" data-status="Em Progresso"><span class="dot dot-progress"></span>Em Progresso</div>
   <div class="status-option" data-status="Feito"><span class="dot dot-done"></span>Feito</div>
-</div>
-<div id="status-portal-report" style="position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:200px;overflow:hidden;display:none;padding:6px 0;">
-  <div style="padding:6px 14px 4px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Estado Report</div>
-  <div class="rp-status-opt" data-status="" style="padding:7px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--muted)">— Limpar</span></div>
-  <div class="rp-status-opt" data-status="VALIDADO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-validado">VALIDADO</span></div>
-  <div class="rp-status-opt" data-status="EM CURSO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-em-curso">EM CURSO</span></div>
-  <div class="rp-status-opt" data-status="ENVIADO REPORT" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-enviado">ENVIADO REPORT</span></div>
-  <div class="rp-status-opt" data-status="FALTA FAZER FECHO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-fecho">FALTA FAZER FECHO</span></div>
-  <div class="rp-status-opt" data-status="faltam documentos/inf por parte cliente" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-doc">faltam documentos/inf</span></div>
-  <div class="rp-status-opt" data-status="LANÇADO" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-lancado">LANÇADO</span></div>
-  <div class="rp-status-opt" data-status="FALTA VALIDAR" style="padding:7px 14px;cursor:pointer;"><span class="rp-cell rp-falta-validar">FALTA VALIDAR</span></div>
 </div>
 
 <div class="overlay" id="overlay">
@@ -1927,12 +1956,14 @@ function rpFechoCls(f) {
   return '';
 }
 
-function rpCellHtml(val) {
+function rpCellHtml(val, row, mi) {
   if (!val) return '<span class="cell-empty">·</span>';
   const opt = RP_DD_OPTIONS.find(o => o.value === val);
   const cls = opt ? opt.cls : '';
   const label = opt ? opt.label : val;
-  return `<span class="rp-cell ${cls}">${label}</span>`;
+  const cellData = row?.cellData?.[mi];
+  const person = cellData?.pessoa ? `<br><span style="font-size:9px;color:var(--muted);font-weight:600">${cellData.pessoa}</span>` : '';
+  return `<span class="rp-cell ${cls}">${label}</span>${person}`;
 }
 
 // rpData: array of {c, f, m:[12 strings]}
@@ -2076,7 +2107,7 @@ function rpRender() {
     <th style="min-width:90px;text-align:center">Fecho</th>
     ${miList.map(i => `<th class="month-col" style="min-width:130px;text-align:center">${RP_MESES[i]}</th>`).join('')}
     <th style="min-width:150px">Observações</th>
-    <th style="min-width:130px;border-left:2px solid var(--border)">Atribuição Tarefa</th>
+
   </tr>`;
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="${2 + miList.length + 1}" style="text-align:center;color:var(--muted);padding:20px">Sem resultados</td></tr>`;
@@ -2087,11 +2118,9 @@ function rpRender() {
     return `<tr>
       <td style="font-size:12px;font-weight:600">${r.c}</td>
       <td style="text-align:center"><span class="rp-fecho ${rpFechoCls(r.f)}">${r.f}</span></td>
-      ${miList.map(mi => `<td class="cell-edit" style="text-align:center;border-left:1px solid #ddd" onclick="rpOpenCellDropdown(${realIdx},${mi},this)">${rpCellHtml(r.m[mi])}</td>`).join('')}
+      ${miList.map(mi => `<td class="cell-edit" style="text-align:center;border-left:1px solid #ddd" onclick="rpOpenCellModal(${realIdx},${mi})">${rpCellHtml(r.m[mi], r, mi)}</td>`).join('')}
       <td style="font-size:11px;color:var(--text);min-width:180px;cursor:pointer;border-left:2px solid var(--border)" onclick="rpOpenObs(${realIdx})" title="Clique para editar"><span style="color:${r.obs ? 'var(--text)' : 'var(--muted)'}">${r.obs || '＋ Adicionar nota'}</span></td>
-      <td style="text-align:center;border-left:2px solid var(--border);cursor:pointer" onclick="rpOpenAtrib(${realIdx})" title="Clique para atribuir">
-        ${r.atrib ? `<span style="font-size:11px;font-weight:600;color:var(--accent)">${r.atrib}</span>${r.atribMes ? `<br><span style="font-size:10px;color:var(--muted)">${r.atribMes}</span>` : ''}` : '<span style="color:var(--muted);font-size:11px">＋ Atribuir</span>'}
-      </td>
+
     </tr>`;
   }).join('');
 }
@@ -2181,6 +2210,70 @@ async function rpSaveAtrib() {
 }
 document.getElementById('rpAtribOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('rpAtribOverlay')) rpCloseAtrib();
+});
+
+let rpCellIdx = null, rpCellMi = null, rpCellVal = null;
+
+function rpOpenCellModal(idx, mi) {
+  rpCellIdx = idx; rpCellMi = mi;
+  const r = rpData[idx];
+  const cellData = r.cellData?.[mi] || {};
+  rpCellVal = r.m[mi] || '';
+  document.getElementById('rpCellTitle').textContent = RP_MESES_FULL[mi];
+  document.getElementById('rpCellSubtitle').textContent = r.c;
+  document.getElementById('rpCellPessoa').value = cellData.pessoa || '';
+  document.getElementById('rpCellCriadoPor').value = cellData.criadoPor || '';
+  // Highlight selected option
+  document.querySelectorAll('.rp-cell-opt').forEach(o => {
+    o.style.outline = o.dataset.val === rpCellVal ? '2px solid var(--accent)' : 'none';
+  });
+  document.getElementById('rpCellOverlay').style.display = 'flex';
+}
+
+function rpCloseCellModal() {
+  document.getElementById('rpCellOverlay').style.display = 'none';
+  rpCellIdx = null; rpCellMi = null;
+}
+
+async function rpSaveCellModal() {
+  if (rpCellIdx === null) return;
+  const idx = rpCellIdx, mi = rpCellMi;
+  const pessoa = document.getElementById('rpCellPessoa').value;
+  const criadoPor = document.getElementById('rpCellCriadoPor').value;
+  rpData[idx].m[mi] = rpCellVal;
+  if (!rpData[idx].cellData) rpData[idx].cellData = {};
+  rpData[idx].cellData[mi] = { pessoa, criadoPor };
+  rpCloseCellModal();
+  rpRender();
+  rpScheduleSave();
+  // Create task if pessoa set and val is not empty
+  if (pessoa && rpCellVal) {
+    try {
+      const r = rpData[idx];
+      const fs = await cfGetFs();
+      const db = window._cfDb;
+      if (!fs.addDoc) throw new Error('addDoc não disponível');
+      await fs.addDoc(fs.collection(db, 'tarefas'), {
+        client: r.c, task: rpCellVal + ' - ' + RP_MESES_FULL[mi],
+        assignee: [pessoa], deadline: '', status: '', notes: '',
+        createdBy: criadoPor, fromReport: true, atribMes: RP_MESES_FULL[mi],
+        createdAt: fs.serverTimestamp(), updatedAt: fs.serverTimestamp()
+      });
+      if (typeof window.showToast === 'function') window.showToast('✅ Tarefa criada para ' + pessoa + '!');
+      if (typeof window.sendEmail === 'function') await window.sendEmail(pessoa, rpCellVal + ' - ' + RP_MESES_FULL[mi], r.c, '', '');
+    } catch(e) { console.warn('Erro ao criar tarefa:', e); }
+  }
+}
+
+document.getElementById('rpCellOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('rpCellOverlay')) rpCloseCellModal();
+});
+document.querySelectorAll('.rp-cell-opt').forEach(o => {
+  o.addEventListener('click', () => {
+    rpCellVal = o.dataset.val;
+    document.querySelectorAll('.rp-cell-opt').forEach(x => x.style.outline = 'none');
+    o.style.outline = '2px solid var(--accent)';
+  });
 });
 
 let rpObsIdx = null;
@@ -2396,9 +2489,7 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
         <td style="text-align:center">
           ${currentTab === 'archive'
             ? `<span class="status-btn done">${meta.label}</span>`
-            : t.fromReport
-              ? `<button class="status-btn pending" data-action="togglestatus" data-id="${t.id}" style="background:rgba(109,74,255,0.1);color:#6d4aff;border-color:#6d4aff55;font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(t.status || 'Pendente')}">${esc(t.status || 'Pendente')} ${chevron}</button>`
-              : `<button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button>`
+            : `<button class="status-btn ${meta.cls}" data-action="togglestatus" data-id="${t.id}">${meta.label} ${chevron}</button>`
           }
         </td>
         <td style="text-align:center">${actionsHTML}</td>
@@ -2408,40 +2499,19 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
 
   // Status portal
   const portal = document.getElementById('status-portal');
-  const reportPortal = document.getElementById('status-portal-report');
-
   function openPortal(taskId, anchor) {
-    // Close without resetting activeStatusId
-    portal.classList.remove('open');
-    reportPortal.style.display = 'none';
-
     activeStatusId = taskId;
-    const task = allTasks.find(t => t.id === taskId);
-    const isReport = task?.fromReport;
-    const cur = task?.status || '';
-    const activePortal = isReport ? reportPortal : portal;
-    if (!isReport) portal.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === cur));
+    const cur = allTasks.find(t => t.id === taskId)?.status || '';
+    portal.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === cur));
     const r = anchor.getBoundingClientRect();
-    activePortal.style.left = r.left + 'px';
-    activePortal.style.minWidth = Math.max(r.width, 160) + 'px';
+    portal.style.left = r.left + 'px';
+    portal.style.minWidth = Math.max(r.width, 160) + 'px';
     const below = window.innerHeight - r.bottom;
-    if (below >= 130) { activePortal.style.top = (r.bottom + 6) + 'px'; activePortal.style.bottom = 'auto'; }
-    else { activePortal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; activePortal.style.top = 'auto'; }
-    if (isReport) activePortal.style.display = 'block';
-    else activePortal.classList.add('open');
+    if (below >= 130) { portal.style.top = (r.bottom + 6) + 'px'; portal.style.bottom = 'auto'; }
+    else { portal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; portal.style.top = 'auto'; }
+    portal.classList.add('open');
   }
-  function closePortal() {
-    portal.classList.remove('open');
-    reportPortal.style.display = 'none';
-    activeStatusId = null;
-  }
-  document.addEventListener('click', e => {
-    if (!e.target.closest('[data-action="togglestatus"]') &&
-        !e.target.closest('#status-portal') &&
-        !e.target.closest('#status-portal-report')) {
-      closePortal();
-    }
-  });
+  function closePortal() { portal.classList.remove('open'); activeStatusId = null; }
 
   // Sync task status to Report
   function rpSyncStatus(task, newStatus) {
@@ -2471,30 +2541,8 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
     }
   }
 
-  // Report portal click handler
-  reportPortal.addEventListener('click', async e => {
-    e.stopPropagation();
-    const opt = e.target.closest('.rp-status-opt');
-    if (!opt) return;
-    const id = activeStatusId;
-    const status = opt.dataset.status;
-    closePortal();
-    if (!id) return;
-    try {
-      const finalStatus = status === 'VALIDADO' ? 'Feito' : status;
-      await updateDoc(doc(db, 'tarefas', id), { status: finalStatus, updatedAt: serverTimestamp() });
-      if (status === 'VALIDADO') {
-        const task = allTasks.find(t => t.id === id);
-        if (task?.createdBy) await sendEmailConcluida(task.createdBy, task.task, task.client, task.assignee, task.deadline, task.notes);
-        showToast('Tarefa validada e arquivada ✅');
-      } else {
-        showToast('Status atualizado!');
-      }
-    } catch { showToast('Erro ao atualizar.'); }
-  });
 
-
-
+  
   portal.addEventListener('click', async e => {
     const opt = e.target.closest('.status-option');
     if (!opt) return;
