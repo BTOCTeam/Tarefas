@@ -801,23 +801,6 @@ tbody tr.row-report:hover { background: rgba(109,74,255,0.1); }
     </div>
   </div>
 
-  <!-- Report Sync Modal (shown when task marked Feito) -->
-  <div id="rpSyncOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10001;align-items:center;justify-content:center;">
-    <div style="background:var(--surface);border-radius:16px;padding:28px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-      <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;color:var(--text)">Atualizar Report</h3>
-      <p style="margin:0 0 18px;font-size:12px;color:var(--muted)" id="rpSyncSubtitle"></p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
-        <div class="rp-sync-opt" data-val="VALIDADO" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#d1fae5;color:#065f46;font-weight:700;font-size:13px;">VALIDADO</div>
-        <div class="rp-sync-opt" data-val="LANÇADO, FALTA VALIDAR" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#fef9c3;color:#854d0e;font-weight:700;font-size:13px;">LANÇADO, FALTA VALIDAR</div>
-        <div class="rp-sync-opt" data-val="faltam documentos/inf por parte cliente" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#ffedd5;color:#c2410c;font-weight:700;font-size:13px;">faltam documentos/inf por parte cliente</div>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="rpSyncClose()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;">Não alterar</button>
-        <button onclick="rpSyncSave()" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">💾 Guardar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Obs Modal -->
   <div id="rpObsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;">
     <div style="background:var(--surface);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -2256,16 +2239,26 @@ function rpSyncSave() {
   }
   rpSyncClose();
 }
-document.getElementById('rpSyncOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('rpSyncOverlay')) rpSyncClose();
-});
-document.querySelectorAll('.rp-sync-opt').forEach(o => {
-  o.addEventListener('click', () => {
-    rpSyncVal = o.dataset.val;
-    document.querySelectorAll('.rp-sync-opt').forEach(x => x.style.outline = 'none');
-    o.style.outline = '2px solid var(--accent)';
+// Init rpSync listeners after DOM ready
+function rpSyncInitListeners() {
+  const overlay = document.getElementById('rpSyncOverlay');
+  if (!overlay) return;
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) rpSyncClose();
   });
-});
+  overlay.querySelectorAll('.rp-sync-opt').forEach(o => {
+    o.addEventListener('click', () => {
+      rpSyncVal = o.dataset.val;
+      overlay.querySelectorAll('.rp-sync-opt').forEach(x => x.style.outline = 'none');
+      o.style.outline = '2px solid var(--accent)';
+    });
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', rpSyncInitListeners);
+} else {
+  setTimeout(rpSyncInitListeners, 0);
+}
 
 let rpCellIdx = null, rpCellMi = null, rpCellVal = null;
 
@@ -2777,5 +2770,21 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePortal(); closeModal(); closeNoteModal(); closeConfirmDelete(); } });
   window.addEventListener('scroll', closePortal, true);
 </script>
+<!-- Report Sync Modal — global, outside pages -->
+<div id="rpSyncOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10001;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border-radius:16px;padding:28px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;color:var(--text)">Atualizar Report</h3>
+    <p style="margin:0 0 18px;font-size:12px;color:var(--muted)" id="rpSyncSubtitle"></p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+      <div class="rp-sync-opt" data-val="VALIDADO" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#d1fae5;color:#065f46;font-weight:700;font-size:13px;">VALIDADO</div>
+      <div class="rp-sync-opt" data-val="LANÇADO, FALTA VALIDAR" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#fef9c3;color:#854d0e;font-weight:700;font-size:13px;">LANÇADO, FALTA VALIDAR</div>
+      <div class="rp-sync-opt" data-val="faltam documentos/inf por parte cliente" style="padding:10px 16px;border-radius:8px;cursor:pointer;background:#ffedd5;color:#c2410c;font-weight:700;font-size:13px;">faltam documentos/inf por parte cliente</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="rpSyncClose()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;">Não alterar</button>
+      <button onclick="rpSyncSave()" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">💾 Guardar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
