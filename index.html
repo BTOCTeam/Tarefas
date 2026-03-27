@@ -3121,8 +3121,18 @@ document.getElementById('rpObsOverlay').addEventListener('click', e => { if (e.t
     if (below >= 130) { portal.style.top = (r.bottom + 6) + 'px'; portal.style.bottom = 'auto'; }
     else { portal.style.bottom = (window.innerHeight - r.top + 6) + 'px'; portal.style.top = 'auto'; }
     portal.classList.add('open');
+    setTimeout(() => document.addEventListener('click', portalOutsideClick), 0);
   }
-  function closePortal() { portal.classList.remove('open'); activeStatusId = null; }
+  function portalOutsideClick(e) {
+    if (!portal.contains(e.target)) {
+      closePortal();
+    }
+  }
+  function closePortal() {
+    portal.classList.remove('open');
+    activeStatusId = null;
+    document.removeEventListener('click', portalOutsideClick);
+  }
 
   function rpSyncStatus(task, newStatus) {
     if (!task?.fromReport) return;
