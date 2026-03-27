@@ -1572,14 +1572,20 @@ tbody tr.row-report:hover {
     <span id="cfYearStatus" style="font-size:11px;color:var(--muted);margin-left:4px;"></span>
   </div>
   <div class="cf-stats" id="cfStats">
-    <div class="cf-stat" style="cursor:default;">
-      <div class="cf-stat-label">Mês</div>
+    <div class="cf-stat" style="cursor:default;" id="cfStatCard">
+      <div class="cf-stat-label" id="cfStatLabel">Mês</div>
       <select id="cfStatMonth" onchange="cfRenderStats()" style="font-size:18px;font-weight:700;color:var(--accent);background:transparent;border:none;outline:none;cursor:pointer;font-family:inherit;width:100%;margin-top:4px;">
         <option value="">Ano todo</option>
         <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
         <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
         <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
         <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
+      <select id="cfStatPPC" onchange="cfRenderStats()" style="display:none;font-size:18px;font-weight:700;color:var(--accent);background:transparent;border:none;outline:none;cursor:pointer;font-family:inherit;width:100%;margin-top:4px;">
+        <option value="">Todas as datas</option>
+        <option value="0">Jul (31/07)</option>
+        <option value="1">Set (30/09)</option>
+        <option value="2">Dez (15/12)</option>
       </select>
     </div>
   </div>
@@ -2170,18 +2176,16 @@ function cfGetStatMonth() {
 }
 
 const CF_ANNUAL_SECTIONS = ['Modelo 39', 'Inventários'];
+const PPC_STAT_LABELS = ['Jul (31/07)', 'Set (30/09)', 'Dez (15/12)'];
 
 function cfCalcStats(miList) {
   const rows = cfData[cfActiveSection];
   if (cfActiveSection === 'Pag. por Conta') return { sub: 0, pend: 0 };
-  // Modelo 39 e Inventários: contagem anual — apenas m[0]
   if (CF_ANNUAL_SECTIONS.includes(cfActiveSection)) {
     let sub = 0, pend = 0;
     rows.forEach(r => {
       const v = (r.m || [])[0];
-      const vl = (v || '').toLowerCase();
-      if (v && vl !== '') sub++;
-      else pend++;
+      if (v && v !== '') sub++; else pend++;
     });
     return { sub, pend };
   }
@@ -2201,19 +2205,58 @@ function cfCalcStats(miList) {
   return { sub, pend };
 }
 
+function cfCalcStatsPPC() {
+  const rows = cfData['Pag. por Conta'];
+  return PPC_STAT_LABELS.map((label, i) => {
+    let pc_sub = 0, pc_pend = 0, pac_sub = 0, pac_pend = 0;
+    rows.forEach(r => {
+      const vpc = (r.pc || [])[i];
+      const vpac = (r.pac || [])[i];
+      if (vpc && vpc !== '' && vpc !== 'N/A') pc_sub++; else pc_pend++;
+      if (vpac && vpac !== '' && vpac !== 'N/A') pac_sub++; else pac_pend++;
+    });
+    return { label, pc_sub, pc_pend, pac_sub, pac_pend };
+  });
+}
+
 function cfRenderStats() {
   const rows = cfData[cfActiveSection];
   const total = rows.length;
-  const isAnnual = CF_ANNUAL_SECTIONS.includes(cfActiveSection) || cfActiveSection === 'Pag. por Conta';
-  // Esconder/mostrar selector de mês
+  const isPPC = cfActiveSection === 'Pag. por Conta';
+  const isAnnual = CF_ANNUAL_SECTIONS.includes(cfActiveSection);
+
+  // Toggle selectores: mês normal vs datas PPC vs nada
   const monthSel = document.getElementById('cfStatMonth');
-  if (monthSel) monthSel.parentElement.style.display = isAnnual ? 'none' : '';
+  const ppcSel   = document.getElementById('cfStatPPC');
+  const statLabel = document.getElementById('cfStatLabel');
+  if (monthSel) monthSel.style.display = (!isPPC && !isAnnual) ? '' : 'none';
+  if (ppcSel)   ppcSel.style.display   = isPPC ? '' : 'none';
+  if (statLabel) statLabel.textContent  = isPPC ? 'Data' : 'Mês';
+
+  const statsDiv = document.getElementById('cfStats');
+  while (statsDiv.children.length > 1) statsDiv.removeChild(statsDiv.lastChild);
+
+  if (isPPC) {
+    const selIdx = ppcSel ? ppcSel.value : '';
+    const cards = [`<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">${total}</div></div>`];
+    if (selIdx !== '') {
+      const s = cfCalcStatsPPC()[+selIdx];
+      cards.push(
+        `<div class="cf-stat"><div class="cf-stat-label">PC · Submetidos</div><div class="cf-stat-val green">${s.pc_sub}</div></div>`,
+        `<div class="cf-stat"><div class="cf-stat-label">PC · Por fazer</div><div class="cf-stat-val red">${s.pc_pend}</div></div>`,
+        `<div class="cf-stat"><div class="cf-stat-label">PAC · Submetidos</div><div class="cf-stat-val green">${s.pac_sub}</div></div>`,
+        `<div class="cf-stat"><div class="cf-stat-label">PAC · Por fazer</div><div class="cf-stat-val red">${s.pac_pend}</div></div>`
+      );
+    }
+    statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
+    document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
+    return;
+  }
+
   const sm = (!isAnnual && cfGetStatMonth() !== '') ? cfGetStatMonth() : '';
   const miList = sm !== '' ? [+sm] : [0,1,2,3,4,5,6,7,8,9,10,11];
   const { sub, pend } = cfCalcStats(miList);
   const mesLabel = sm !== '' ? CF_MESES_FULL[+sm] : null;
-  const statsDiv = document.getElementById('cfStats');
-  while (statsDiv.children.length > 1) statsDiv.removeChild(statsDiv.lastChild);
   const subLabel = isAnnual ? 'Concluídos · Anual' : ('Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : ''));
   const pendLabel = isAnnual ? 'Por concluir · Anual' : ('Por entregar' + (mesLabel ? ' · ' + mesLabel : ''));
   const cards = [
