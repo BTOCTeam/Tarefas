@@ -2247,6 +2247,9 @@ function cfRenderStats() {
         `<div class="cf-stat"><div class="cf-stat-label">PAC · Submetidos</div><div class="cf-stat-val green">${s.pac_sub}</div></div>`,
         `<div class="cf-stat"><div class="cf-stat-label">PAC · Por fazer</div><div class="cf-stat-val red">${s.pac_pend}</div></div>`
       );
+      statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    } else {
+      statsDiv.style.gridTemplateColumns = '';
     }
     statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
     document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
