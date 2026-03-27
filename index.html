@@ -2169,10 +2169,23 @@ function cfGetStatMonth() {
   return el ? el.value : '';
 }
 
+const CF_ANNUAL_SECTIONS = ['Modelo 39', 'Inventários'];
+
 function cfCalcStats(miList) {
   const rows = cfData[cfActiveSection];
-  if (cfActiveSection === 'Pag. por Conta') return { sub: 0, pend: 0, inex: 0 };
-  let sub = 0, pend = 0, inex = 0;
+  if (cfActiveSection === 'Pag. por Conta') return { sub: 0, pend: 0 };
+  // Modelo 39 e Inventários: contagem anual — apenas m[0]
+  if (CF_ANNUAL_SECTIONS.includes(cfActiveSection)) {
+    let sub = 0, pend = 0;
+    rows.forEach(r => {
+      const v = (r.m || [])[0];
+      const vl = (v || '').toLowerCase();
+      if (v && vl !== '') sub++;
+      else pend++;
+    });
+    return { sub, pend };
+  }
+  let sub = 0, pend = 0;
   const trimesterEnd = [2, 5, 8, 11];
   rows.forEach(r => {
     if (!r.m) return;
@@ -2185,22 +2198,28 @@ function cfCalcStats(miList) {
       else if (!v || v === '') pend++;
     });
   });
-  return { sub, pend, inex };
+  return { sub, pend };
 }
 
 function cfRenderStats() {
   const rows = cfData[cfActiveSection];
   const total = rows.length;
-  const sm = cfGetStatMonth();
+  const isAnnual = CF_ANNUAL_SECTIONS.includes(cfActiveSection) || cfActiveSection === 'Pag. por Conta';
+  // Esconder/mostrar selector de mês
+  const monthSel = document.getElementById('cfStatMonth');
+  if (monthSel) monthSel.parentElement.style.display = isAnnual ? 'none' : '';
+  const sm = (!isAnnual && cfGetStatMonth() !== '') ? cfGetStatMonth() : '';
   const miList = sm !== '' ? [+sm] : [0,1,2,3,4,5,6,7,8,9,10,11];
   const { sub, pend } = cfCalcStats(miList);
   const mesLabel = sm !== '' ? CF_MESES_FULL[+sm] : null;
   const statsDiv = document.getElementById('cfStats');
   while (statsDiv.children.length > 1) statsDiv.removeChild(statsDiv.lastChild);
+  const subLabel = isAnnual ? 'Concluídos · Anual' : ('Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : ''));
+  const pendLabel = isAnnual ? 'Por concluir · Anual' : ('Por entregar' + (mesLabel ? ' · ' + mesLabel : ''));
   const cards = [
     '<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">' + total + '</div></div>',
-    '<div class="cf-stat"><div class="cf-stat-label">Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val green">' + sub + '</div></div>',
-    '<div class="cf-stat"><div class="cf-stat-label">Por entregar' + (mesLabel ? ' · ' + mesLabel : '') + '</div><div class="cf-stat-val red">' + pend + '</div></div>',
+    '<div class="cf-stat"><div class="cf-stat-label">' + subLabel + '</div><div class="cf-stat-val green">' + sub + '</div></div>',
+    '<div class="cf-stat"><div class="cf-stat-label">' + pendLabel + '</div><div class="cf-stat-val red">' + pend + '</div></div>',
   ];
   statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
   document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
@@ -2281,6 +2300,23 @@ function cfRender() {
       <td style="max-width:220px;font-size:12px">${r.c}</td>
       <td><span class="group-tag">${r.g || '—'}</span></td>
       <td class="cell-edit" style="text-align:center" onclick="cfEditCell(${r._idx},0,this)">${cfCellHtml((r.m||[])[0])}</td>
+      <td><button class="cf-btn cf-btn-sm" onclick="cfEditEntry(${r._idx})">✎</button></td>
+    </tr>`).join('');
+    return;
+  }
+
+  if (cfActiveSection === 'Modelo 39') {
+    thead.innerHTML = `<tr>
+      <th style="min-width:220px">Cliente</th>
+      <th style="min-width:80px">Grupo</th>
+      <th style="min-width:140px;text-align:center;border-left:1px solid var(--border)">AT</th>
+      <th style="min-width:40px"></th>
+    </tr>`;
+    if (!rows.length) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Sem resultados</td></tr>`; return; }
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td style="max-width:220px;font-size:12px">${r.c}</td>
+      <td><span class="group-tag">${r.g || '—'}</span></td>
+      <td class="cell-edit" style="text-align:center;border-left:1px solid var(--border)" onclick="cfEditCell(${r._idx},0,this)">${cfCellHtml((r.m||[])[0])}</td>
       <td><button class="cf-btn cf-btn-sm" onclick="cfEditEntry(${r._idx})">✎</button></td>
     </tr>`).join('');
     return;
