@@ -973,6 +973,8 @@ tbody tr.row-report:hover {
   border-radius: 8px;
   margin-bottom: 1.5rem;
   overflow: hidden;
+  width: fit-content;
+  min-width: 100%;
 }
 
 .cf-stat {
@@ -2241,15 +2243,18 @@ function cfRenderStats() {
     const cards = [`<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">${total}</div></div>`];
     if (selIdx !== '') {
       const s = cfCalcStatsPPC()[+selIdx];
-      cards.push(
-        `<div class="cf-stat"><div class="cf-stat-label">PC · Submetidos</div><div class="cf-stat-val green">${s.pc_sub}</div></div>`,
-        `<div class="cf-stat"><div class="cf-stat-label">PC · Por fazer</div><div class="cf-stat-val red">${s.pc_pend}</div></div>`,
-        `<div class="cf-stat"><div class="cf-stat-label">PAC · Submetidos</div><div class="cf-stat-val green">${s.pac_sub}</div></div>`,
-        `<div class="cf-stat"><div class="cf-stat-label">PAC · Por fazer</div><div class="cf-stat-val red">${s.pac_pend}</div></div>`
-      );
-      statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
+      // Linha 1: Data + Clientes (já no cards[])
+      // Linha 2: 4 cards a span toda a largura
+      const row2 = `<div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);">
+        <div class="cf-stat"><div class="cf-stat-label">PC · Submetidos</div><div class="cf-stat-val green">${s.pc_sub}</div></div>
+        <div class="cf-stat"><div class="cf-stat-label">PC · Por fazer</div><div class="cf-stat-val red">${s.pc_pend}</div></div>
+        <div class="cf-stat"><div class="cf-stat-label">PAC · Submetidos</div><div class="cf-stat-val green">${s.pac_sub}</div></div>
+        <div class="cf-stat"><div class="cf-stat-label">PAC · Por fazer</div><div class="cf-stat-val red">${s.pac_pend}</div></div>
+      </div>`;
+      cards.push(row2);
+      statsDiv.style.gridTemplateColumns = 'repeat(2, 1fr)';
     } else {
-      statsDiv.style.gridTemplateColumns = '';
+      statsDiv.style.gridTemplateColumns = 'repeat(2, auto)';
     }
     statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
     document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
