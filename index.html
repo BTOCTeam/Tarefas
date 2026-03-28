@@ -2275,7 +2275,7 @@ function cfRenderStats() {
     '<div class="cf-stat"><div class="cf-stat-label">' + subLabel + '</div><div class="cf-stat-val green">' + sub + '</div></div>',
     '<div class="cf-stat"><div class="cf-stat-label">' + pendLabel + '</div><div class="cf-stat-val red">' + pend + '</div></div>',
   ];
-  if (cards.length) { statsDiv.style.display = ''; statsDiv.insertAdjacentHTML('beforeend', cards.join('')); }
+  if (cards.length) { statsDiv.style.display = ''; statsDiv.style.gridTemplateColumns = `repeat(${cards.length}, auto)`; statsDiv.insertAdjacentHTML('beforeend', cards.join('')); }
   document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
 }
 
