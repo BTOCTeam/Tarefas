@@ -1565,31 +1565,34 @@ tbody tr.row-report:hover {
 <!-- CONTROLO FISCAL PAGE -->
 <div class="page" id="page-controlo">
 <div class="cf-wrap">
-  <div style="max-width:1600px;margin:0 auto 16px;display:flex;align-items:center;gap:8px;">
+  <div style="max-width:1600px;margin:0 auto 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
     <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Ano</span>
     <select id="cfYearSelect" onchange="cfSetYear(+this.value)" style="font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;">
       <option value="2026">2026</option>
       <option value="2025">2025</option>
     </select>
     <span id="cfYearStatus" style="font-size:11px;color:var(--muted);margin-left:4px;"></span>
-  </div>
-  <div class="cf-stats" id="cfStats">
-    <div class="cf-stat" style="cursor:default;" id="cfStatCard">
-      <div class="cf-stat-label" id="cfStatLabel">Mês</div>
-      <select id="cfStatMonth" onchange="cfRenderStats()" style="font-size:18px;font-weight:700;color:var(--accent);background:transparent;border:none;outline:none;cursor:pointer;font-family:inherit;width:100%;margin-top:4px;">
+    <div id="cfMonthSelWrap" style="display:flex;align-items:center;gap:8px;margin-left:8px;">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Mês</span>
+      <select id="cfStatMonth" onchange="cfRenderStats()" style="font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;">
         <option value="">Ano todo</option>
         <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
         <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
         <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
         <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
       </select>
-      <select id="cfStatPPC" onchange="cfRenderStats()" style="display:none;font-size:18px;font-weight:700;color:var(--accent);background:transparent;border:none;outline:none;cursor:pointer;font-family:inherit;width:100%;margin-top:4px;">
+    </div>
+    <div id="cfPPCSelWrap" style="display:none;align-items:center;gap:8px;margin-left:8px;">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Data</span>
+      <select id="cfStatPPC" onchange="cfRenderStats()" style="font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;">
         <option value="">Todas as datas</option>
         <option value="0">Jul (31/07)</option>
         <option value="1">Set (30/09)</option>
         <option value="2">Dez (15/12)</option>
       </select>
     </div>
+  </div>
+  <div class="cf-stats" id="cfStats">
   </div>
   <div class="cf-sections" id="cfSections"></div>
   <div class="cf-section-info" id="cfSectionInfo"></div>
@@ -2230,17 +2233,17 @@ function cfRenderStats() {
   // Toggle selectores: mês normal vs datas PPC vs nada
   const monthSel = document.getElementById('cfStatMonth');
   const ppcSel   = document.getElementById('cfStatPPC');
-  const statLabel = document.getElementById('cfStatLabel');
-  if (monthSel) monthSel.style.display = (!isPPC && !isAnnual) ? '' : 'none';
-  if (ppcSel)   ppcSel.style.display   = isPPC ? '' : 'none';
-  if (statLabel) statLabel.textContent  = isPPC ? 'Data' : 'Mês';
+  const monthWrap = document.getElementById('cfMonthSelWrap');
+  const ppcWrap   = document.getElementById('cfPPCSelWrap');
+  if (monthWrap) monthWrap.style.display = (!isPPC && !isAnnual) ? 'flex' : 'none';
+  if (ppcWrap)   ppcWrap.style.display   = isPPC ? 'flex' : 'none';
 
   const statsDiv = document.getElementById('cfStats');
-  while (statsDiv.children.length > 1) statsDiv.removeChild(statsDiv.lastChild);
+  statsDiv.innerHTML = ''; statsDiv.style.display = 'none';
 
   if (isPPC) {
     const selIdx = ppcSel ? ppcSel.value : '';
-    const cards = [`<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">${total}</div></div>`];
+    const cards = [];
     if (selIdx !== '') {
       const s = cfCalcStatsPPC()[+selIdx];
       // Linha 1: Data + Clientes (já no cards[])
@@ -2256,7 +2259,7 @@ function cfRenderStats() {
     } else {
       statsDiv.style.gridTemplateColumns = 'repeat(2, auto)';
     }
-    statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
+    if (cards.length) { statsDiv.style.display = ''; statsDiv.insertAdjacentHTML('beforeend', cards.join('')); }
     document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
     return;
   }
@@ -2268,11 +2271,11 @@ function cfRenderStats() {
   const subLabel = isAnnual ? 'Concluídos · Anual' : ('Submetidos/OK' + (mesLabel ? ' · ' + mesLabel : ''));
   const pendLabel = isAnnual ? 'Por concluir · Anual' : ('Por entregar' + (mesLabel ? ' · ' + mesLabel : ''));
   const cards = [
-    '<div class="cf-stat"><div class="cf-stat-label">Clientes</div><div class="cf-stat-val blue">' + total + '</div></div>',
+
     '<div class="cf-stat"><div class="cf-stat-label">' + subLabel + '</div><div class="cf-stat-val green">' + sub + '</div></div>',
     '<div class="cf-stat"><div class="cf-stat-label">' + pendLabel + '</div><div class="cf-stat-val red">' + pend + '</div></div>',
   ];
-  statsDiv.insertAdjacentHTML('beforeend', cards.join(''));
+  if (cards.length) { statsDiv.style.display = ''; statsDiv.insertAdjacentHTML('beforeend', cards.join('')); }
   document.getElementById('cfSectionInfo').textContent = CF_SECTIONS_META[cfActiveSection] || '';
 }
 
